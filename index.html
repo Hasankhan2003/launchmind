@@ -7,61 +7,49 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
     :root {
-      --indigo: #6366f1;
-      --purple: #8b5cf6;
+      --primary-color: #6366f1;
+      --secondary-color: #8b5cf6;
     }
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, var(--indigo), var(--purple));
-      background-size: 400% 400%;
-      animation: gradient 10s ease infinite;
+      background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
       height: 100vh;
-      overflow-x: hidden;
-    }
-    @keyframes gradient {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
     .hero {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      color: #fff;
+      text-align: center;
     }
     .hero h1 {
       font-size: 48px;
       font-weight: 700;
+      color: #fff;
       margin-bottom: 10px;
     }
     .hero p {
       font-size: 18px;
+      color: #fff;
       margin-bottom: 20px;
     }
     .hero button {
       background: #fff;
-      color: var(--indigo);
+      color: var(--primary-color);
       border: none;
       padding: 15px 30px;
       font-size: 18px;
@@ -79,7 +67,7 @@
       margin-top: 50px;
     }
     .feature {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 10px;
       padding: 20px;
       margin: 20px;
@@ -94,7 +82,7 @@
       transform: scale(1.05);
     }
     .feature i {
-      font-size: 24px;
+      font-size: 48px;
       margin-bottom: 10px;
     }
     .feature h2 {
@@ -103,24 +91,21 @@
     }
     .feature p {
       font-size: 14px;
-      text-align: center;
+      color: #fff;
     }
     .how-it-works {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 50px;
-    }
-    .step {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      padding: 20px;
-      margin: 20px;
-      width: calc(33.33% - 20px);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      margin-top: 50px;
+    }
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
     }
     .step h2 {
       font-size: 18px;
@@ -128,7 +113,7 @@
     }
     .step p {
       font-size: 14px;
-      text-align: center;
+      color: #fff;
     }
     .pricing {
       display: flex;
@@ -137,7 +122,7 @@
       margin-top: 50px;
     }
     .plan {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 10px;
       padding: 20px;
       margin: 20px;
@@ -157,14 +142,14 @@
     }
     .plan p {
       font-size: 14px;
-      text-align: center;
+      color: #fff;
     }
     .plan button {
       background: #fff;
-      color: var(--indigo);
+      color: var(--primary-color);
       border: none;
-      padding: 10px 20px;
-      font-size: 14px;
+      padding: 15px 30px;
+      font-size: 18px;
       cursor: pointer;
       border-radius: 10px;
       transition: background 0.3s ease;
@@ -174,19 +159,19 @@
     }
     .footer {
       margin-top: 50px;
-      color: #fff;
       text-align: center;
+      color: #fff;
     }
-    .fade-in {
-      animation: fade-in 1s ease;
-    }
-    @keyframes fade-in {
-      0% {
+    @keyframes fadeIn {
+      from {
         opacity: 0;
       }
-      100% {
+      to {
         opacity: 1;
       }
+    }
+    .fade-in {
+      animation: fadeIn 1s ease;
     }
   </style>
 </head>
@@ -194,74 +179,82 @@
   <div class="container">
     <div class="hero fade-in">
       <h1>AI Study Planner</h1>
-      <p>Get personalized study plans and ace your exams with minimal stress</p>
+      <p>Get a personalized study plan and achieve your academic goals</p>
       <button>Get Started</button>
     </div>
     <div class="features fade-in">
       <div class="feature">
         <i>📚</i>
         <h2>Syllabus Upload</h2>
-        <p>Upload your course syllabi to extract key dates and assignment deadlines</p>
+        <p>Upload your course syllabus and get a personalized study plan</p>
       </div>
       <div class="feature">
         <i>📝</i>
-        <h2>Exam Deadline Input</h2>
-        <p>Input your exam dates and times to receive personalized study plan recommendations</p>
+        <h2>Exam Deadline Tracking</h2>
+        <p>Get reminders and notifications for upcoming exam deadlines</p>
       </div>
       <div class="feature">
         <i>📊</i>
-        <h2>Daily Study Plan Generation</h2>
-        <p>Get a daily study plan based on your syllabus, exam deadlines, and learning goals</p>
-      </div>
-      <div class="feature">
-        <i>📈</i>
-        <h2>Task Prioritization</h2>
-        <p>Prioritize tasks based on urgency and importance, ensuring you focus on the most critical study materials first</p>
-      </div>
-      <div class="feature">
-        <i>📊</i>
-        <h2>Progress Tracking</h2>
-        <p>Track your study progress, identify areas where you need improvement, and adjust your study plan accordingly</p>
+        <h2>Study Material Organization</h2>
+        <p>Store and organize your study materials in one place</p>
       </div>
     </div>
     <div class="how-it-works fade-in">
+      <h1>How It Works</h1>
       <div class="step">
         <h2>Step 1: Upload Your Syllabus</h2>
-        <p>Upload your course syllabi to extract key dates and assignment deadlines</p>
+        <p>Upload your course syllabus and get a personalized study plan</p>
       </div>
       <div class="step">
-        <h2>Step 2: Input Your Exam Deadlines</h2>
-        <p>Input your exam dates and times to receive personalized study plan recommendations</p>
+        <h2>Step 2: Get a Personalized Study Plan</h2>
+        <p>Get a tailored study plan based on your course material and learning style</p>
       </div>
       <div class="step">
-        <h2>Step 3: Get Your Daily Study Plan</h2>
-        <p>Get a daily study plan based on your syllabus, exam deadlines, and learning goals</p>
+        <h2>Step 3: Track Your Progress</h2>
+        <p>Track your progress and get insights and recommendations to help you stay on track</p>
       </div>
     </div>
     <div class="pricing fade-in">
+      <h1>Pricing</h1>
       <div class="plan">
-        <h2>Free Plan</h2>
-        <p>Get limited access to our study planning features</p>
+        <h2>Free</h2>
+        <p>Get a limited study plan and track your progress</p>
         <button>Sign Up</button>
       </div>
       <div class="plan">
-        <h2>Premium Plan</h2>
-        <p>Get full access to our study planning features, including personalized study plans and progress tracking</p>
+        <h2>Premium</h2>
+        <p>Get a personalized study plan, track your progress, and get insights and recommendations</p>
         <button>Upgrade to Premium</button>
       </div>
     </div>
     <div class="footer fade-in">
       <p>&copy; 2024 AI Study Planner</p>
-      <form>
-        <input type="email" placeholder="Enter your email" id="email">
-        <button type="submit" onclick="submitForm()">Sign Up</button>
-      </form>
     </div>
   </div>
   <script>
-    function submitForm() {
+    const form = document.createElement('form');
+    form.innerHTML = `
+      <input type="email" placeholder="Enter your email" required>
+      <button>Sign Up</button>
+    `;
+    form.style.position = 'fixed';
+    form.style.top = '50%';
+    form.style.left = '50%';
+    form.style.transform = 'translate(-50%, -50%)';
+    form.style.background = '#fff';
+    form.style.padding = '20px';
+    form.style.borderRadius = '10px';
+    form.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.2)';
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    document.querySelector('.hero button').addEventListener('click', () => {
+      form.style.display = 'block';
+    });
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
       alert('Thank you for signing up!');
-    }
+      form.style.display = 'none';
+    });
   </script>
 </body>
 </html>
