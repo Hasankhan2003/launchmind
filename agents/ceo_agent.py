@@ -1,272 +1,314 @@
 """
 agents/ceo_agent.py - CEO Agent for LaunchMind
 
+ROLE:
+  The CEO is the strategic orchestrator of the entire LaunchMind pipeline.
+  It uses an LLM for every decision — no hardcoded routing.
+
 RESPONSIBILITIES:
   1. Accept the startup idea as the system entry point
-  2. Use LLM to decompose the idea into structured tasks for sub-agents
-  3. Dispatch tasks to ProductAgent, EngineerAgent, MarketingAgent
-  4. Wait for and evaluate all responses using the LLM
-  5. Implement a FEEDBACK LOOP: if a result is weak, send a revision_request
-  6. Coordinate QA review after Engineer + Marketing complete
-  7. When QA passes, send final Slack summary and mark project as complete
+  2. Use LLM to decompose the idea into precise, role-specific tasks
+  3. Dispatch tasks to ProductAgent, EngineerAgent, MarketingAgent via MessageBus
+  4. Evaluate every result with an LLM quality rubric (0–10 scale)
+  5. Enforce a FEEDBACK LOOP: score < threshold → send revision_request → re-evaluate
+  6. Coordinate QA review once Engineer + Marketing are accepted
+  7. When QA passes, send a final Slack launch announcement and mark complete
 
 FEEDBACK LOOP:
-  - CEO sends task → agent responds → CEO evaluates using LLM
-  - If quality score < threshold → send revision_request → wait again
-  - After 2 revision rounds or satisfactory result → proceed
+  • CEO sends task → agent responds → CEO calls LLM to score (0-10)
+  • Score < QUALITY_THRESHOLD → revision_request with specific feedback
+  • After MAX_REVISIONS_PER_AGENT rounds (or satisfactory score) → accept & proceed
+  • QA can also trigger targeted revision_requests for HTML and/or marketing
 """
 
 import json
 import re
 import time
 from message_bus import MessageBus, build_message
-from utils.llm import send_prompt, send_prompt_json
+from utils.llm import send_prompt_json
 from utils.slack_api import send_block_message, build_launch_blocks
+from config import (
+    QUALITY_THRESHOLD,
+    MAX_REVISIONS_PER_AGENT,
+    DEFAULT_STARTUP_IDEA,
+)
 
 AGENT_NAME = "CEO"
 
-# Quality threshold (0–10 scale LLM evaluation)
-# Set to 9 so that typical LLM scores of 8/10 ALWAYS trigger one revision_request
-# demonstrating the feedback loop clearly. MAX_REVISIONS=1 caps it after one round.
-QUALITY_THRESHOLD = 8
-MAX_REVISIONS = 1
-
 
 class CEOAgent:
-    def __init__(self, bus: MessageBus):
-        self.bus = bus
-        self.idea = (
-            "Build a startup called 'AI Study Planner' that helps university students "
-            "convert their syllabus and exam deadlines into a daily study plan."
-        )
-        # Track what we're waiting for
+    def __init__(self, bus: MessageBus, idea: str | None = None):
+        self.bus  = bus
+        self.idea = idea or DEFAULT_STARTUP_IDEA
+
+        # Which agents we are currently waiting on (>0 = pending)
         self._waiting_for: dict[str, int] = {
-            "PRODUCT": 0,
-            "ENGINEER": 0,
+            "PRODUCT":   0,
+            "ENGINEER":  0,
             "MARKETING": 0,
-            "QA": 0,
+            "QA":        0,
         }
+        # Accepted results per agent
         self._results: dict[str, dict] = {}
-        # Tracks whether a QA-triggered revision_request has already been dispatched
+
+        # QA-triggered revision tracking (fire only once per run)
         self._qa_revision_dispatched: bool = False
+
+        # CEO-driven revision counts (per agent)
         self._revision_counts: dict[str, int] = {
-            "PRODUCT": 0,
-            "ENGINEER": 0,
+            "PRODUCT":   0,
+            "ENGINEER":  0,
             "MARKETING": 0,
-            "QA": 0,
+            "QA":        0,
         }
+
         self._project_complete = False
+        self._quality_threshold = QUALITY_THRESHOLD
+        self._max_revisions     = MAX_REVISIONS_PER_AGENT
 
     # ──────────────────────────────────────────
-    #  Entry point: kickoff the system
+    #  Public entry point
     # ──────────────────────────────────────────
     def kickoff(self) -> None:
-        """Called once by main.py to start the entire pipeline."""
+        """Called once by main.py to bootstrap the entire MAS pipeline."""
         print(f"\n{'='*60}")
-        print(f"[CEO] 🚀 Starting LaunchMind with idea:")
+        print(f"[CEO] 🚀 Startup idea received:")
         print(f"[CEO]    {self.idea}")
         print(f"{'='*60}\n")
 
         tasks = self._decompose_idea()
-        self._dispatch_tasks(tasks)
+        self._dispatch_product_task(tasks)
 
     # ──────────────────────────────────────────
-    #  Main processing loop (called each tick)
+    #  Main tick (called each loop iteration)
     # ──────────────────────────────────────────
     def process(self) -> bool:
-        """
-        Process any pending messages. Returns True when the project is complete.
-        """
+        """Drain inbox and process all pending messages. Returns True when done."""
         if self._project_complete:
             return True
 
-        messages = self.bus.fetch(AGENT_NAME)
-
-        for msg in messages:
-            msg_type = msg["message_type"]
+        for msg in self.bus.fetch(AGENT_NAME):
+            mtype      = msg["message_type"]
             from_agent = msg["from_agent"]
-            payload = msg["payload"]
+            payload    = msg["payload"]
 
-            print(f"[CEO] 📬 Received {msg_type} from {from_agent}")
+            print(f"[CEO] 📬 {mtype.upper()} from {from_agent}")
 
-            if msg_type == "result":
+            if mtype == "result":
                 self._handle_result(from_agent, payload, msg["message_id"])
-            elif msg_type == "confirmation":
+            elif mtype == "confirmation":
                 print(f"[CEO] ✅ Confirmation from {from_agent}: {payload.get('status', 'ok')}")
 
         return self._project_complete
 
     # ──────────────────────────────────────────
-    #  LLM-powered task decomposition
+    #  LLM: strategic task decomposition
     # ──────────────────────────────────────────
     def _decompose_idea(self) -> dict:
-        """Use LLM to break the startup idea into structured tasks per agent."""
-        print("[CEO] 🧠 Using LLM to decompose startup idea into agent tasks...")
+        """
+        Use the LLM to break the startup idea into three structured, role-specific tasks.
+        This is the CEO's first real act of intelligence — not a template, but genuine reasoning.
+        """
+        print("[CEO] 🧠 Decomposing startup idea into agent tasks (LLM)…")
 
-        prompt = f"""You are the CEO of a startup accelerator. You have received this startup idea:
+        prompt = f"""You are the CEO of a top-tier startup accelerator. You have just received a new startup idea from a founder:
 
 "{self.idea}"
 
-Your job is to decompose this idea into precise, actionable tasks for three specialist agents.
-Return a valid JSON object with exactly this structure (no markdown, no code fences):
+Your job is to act as a strategic leader and decompose this idea into three precisely-scoped tasks — one per specialist agent on your team. Each task must be actionable, domain-specific, and directly tied to this product.
+
+Return a VALID JSON object with EXACTLY this structure (no markdown, no code fences, raw JSON only):
 
 {{
   "product_task": {{
-    "objective": "...",
-    "context": "...",
-    "deliverables": ["...", "..."]
+    "objective": "<One sharp sentence: what the Product Manager must produce>",
+    "context": "<2-3 sentences on the target user, their core pain, and what makes this product uniquely valuable>",
+    "deliverables": ["value_proposition", "user_personas (3)", "features (min 5 with priority)", "user_stories (min 4)"]
   }},
   "engineer_task": {{
-    "objective": "...",
-    "context": "...",
-    "deliverables": ["...", "..."]
+    "objective": "<One sharp sentence: what the Engineer must build>",
+    "context": "<2-3 sentences on the landing page purpose, design direction, and GitHub deliverables>",
+    "deliverables": ["complete HTML landing page", "GitHub Issue", "GitHub branch", "committed index.html", "Pull Request"]
   }},
   "marketing_task": {{
-    "objective": "...",
-    "context": "...",
-    "deliverables": ["...", "..."]
+    "objective": "<One sharp sentence: what the Marketing strategist must create>",
+    "context": "<2-3 sentences on the target audience, tone, and campaign goals>",
+    "deliverables": ["memorable tagline (max 10 words)", "product description (2-3 sentences)", "cold email with subject + body", "3 platform-specific social posts"]
   }}
 }}
 
-Be specific. Reference the AI Study Planner domain (students, syllabus, exam dates, study schedules).
-Focus each task on what that agent does best."""
+Be specific to the study planning domain. Reference students, syllabus, exams, and scheduling where relevant."""
 
-        raw = send_prompt_json(prompt)
+        raw   = send_prompt_json(prompt)
         tasks = self._parse_json(raw, default={
             "product_task": {
-                "objective": "Define the AI Study Planner product strategy",
+                "objective": "Produce a comprehensive product specification for AI Study Planner",
                 "context": self.idea,
-                "deliverables": ["value proposition", "user personas", "feature list", "user stories"]
+                "deliverables": ["value_proposition", "personas", "features", "user_stories"],
             },
             "engineer_task": {
-                "objective": "Build the landing page and set up GitHub infrastructure",
+                "objective": "Build a modern HTML landing page and set up GitHub infrastructure",
                 "context": self.idea,
-                "deliverables": ["HTML landing page", "GitHub PR", "GitHub Issue"]
+                "deliverables": ["index.html", "GitHub Issue", "GitHub PR"],
             },
             "marketing_task": {
-                "objective": "Create all marketing content for the AI Study Planner",
+                "objective": "Create all launch marketing content for AI Study Planner",
                 "context": self.idea,
-                "deliverables": ["tagline", "description", "cold email", "3 social posts"]
-            }
+                "deliverables": ["tagline", "description", "cold_email", "social_posts"],
+            },
         })
 
-        print("[CEO] ✅ Task decomposition complete.")
-        print(f"[CEO]    Tasks: {list(tasks.keys())}")
+        print(f"[CEO] ✅ Decomposition complete: {list(tasks.keys())}")
         return tasks
 
     # ──────────────────────────────────────────
-    #  Dispatch tasks to sub-agents
+    #  Task dispatch
     # ──────────────────────────────────────────
-    def _dispatch_tasks(self, tasks: dict) -> None:
-        """Send structured task messages to PRODUCT, ENGINEER, and MARKETING agents."""
-
-        # Product Agent
+    def _dispatch_product_task(self, tasks: dict) -> None:
         msg = build_message(
             from_agent=AGENT_NAME,
             to_agent="PRODUCT",
             message_type="task",
             payload={
-                "idea": self.idea,
-                "task": tasks["product_task"],
+                "idea":  self.idea,
+                "task":  tasks.get("product_task", {}),
                 "instructions": (
-                    "Generate a complete product specification in JSON format "
-                    "for the AI Study Planner startup."
+                    "Generate a complete, investment-ready product specification "
+                    "as structured JSON for the AI Study Planner startup."
                 ),
             },
         )
         self.bus.send(msg)
         self._waiting_for["PRODUCT"] += 1
-
-        print("[CEO] 📤 Tasks dispatched to PRODUCT agent.")
-        print("[CEO] ⏳ Waiting for PRODUCT to respond before dispatching ENGINEER & MARKETING...")
+        print("[CEO] 📤 Task dispatched → PRODUCT")
+        print("[CEO] ⏳ Waiting for PRODUCT spec before dispatching ENGINEER & MARKETING…")
 
     def _dispatch_engineer_and_marketing(self, product_spec: dict) -> None:
-        """Dispatch to Engineer and Marketing with the product spec."""
+        """Dispatch to Engineer and Marketing agents, passing the accepted product spec."""
 
-        # Engineer Agent
-        eng_msg = build_message(
+        # Engineer
+        self.bus.send(build_message(
             from_agent=AGENT_NAME,
             to_agent="ENGINEER",
             message_type="task",
             payload={
-                "idea": self.idea,
+                "idea":         self.idea,
                 "product_spec": product_spec,
                 "instructions": (
-                    "Build a full HTML landing page for the AI Study Planner. "
-                    "Then create a GitHub branch, commit the file, open a GitHub issue, "
-                    "and open a Pull Request. Return the PR URL and Issue URL."
+                    "Generate a complete, visually stunning single-file HTML landing page. "
+                    "Then: create a GitHub branch, commit index.html, open a GitHub Issue, "
+                    "and open a Pull Request. Return the PR URL, Issue URL, and HTML code."
                 ),
             },
-        )
-        self.bus.send(eng_msg)
+        ))
         self._waiting_for["ENGINEER"] += 1
 
-        # Marketing Agent
-        mkt_msg = build_message(
+        # Marketing
+        self.bus.send(build_message(
             from_agent=AGENT_NAME,
             to_agent="MARKETING",
             message_type="task",
             payload={
-                "idea": self.idea,
+                "idea":         self.idea,
                 "product_spec": product_spec,
                 "instructions": (
-                    "Generate a tagline, description, cold email, and 3 social posts "
-                    "for the AI Study Planner. Send a real email via SendGrid and "
-                    "post a Slack message. Return all content."
+                    "Generate a tagline, product description, cold email, and 3 social posts. "
+                    "Send a real email via SendGrid and post a Slack Block Kit message. "
+                    "Return all content as structured JSON."
                 ),
             },
-        )
-        self.bus.send(mkt_msg)
+        ))
         self._waiting_for["MARKETING"] += 1
 
-        print("[CEO] 📤 Tasks dispatched to ENGINEER and MARKETING agents.")
+        print("[CEO] 📤 Tasks dispatched → ENGINEER & MARKETING (running in parallel)")
+
+    def _dispatch_qa(self) -> None:
+        """Send QA task with all produced artifacts."""
+        eng = self._results.get("ENGINEER", {})
+        mkt = self._results.get("MARKETING", {})
+
+        self.bus.send(build_message(
+            from_agent=AGENT_NAME,
+            to_agent="QA",
+            message_type="task",
+            payload={
+                "product_spec":      self._results.get("PRODUCT", {}),
+                "html_code":         eng.get("html_code", ""),
+                "pr_url":            eng.get("pr_url", ""),
+                "pr_number":         eng.get("pr_number", 0),
+                "marketing_content": mkt,
+                "full_state":        {"engineer": eng, "marketing": mkt},
+                "instructions": (
+                    "Review the HTML landing page against the product spec for completeness. "
+                    "Review the marketing content for quality, tone, and brand alignment. "
+                    "Post 2 PR review comments on GitHub. "
+                    "Return a structured JSON verdict: pass or fail with specific issues."
+                ),
+            },
+        ))
+        self._waiting_for["QA"] += 1
+        print("[CEO] 📤 Task dispatched → QA")
 
     # ──────────────────────────────────────────
     #  Handle incoming results (with feedback loop)
     # ──────────────────────────────────────────
     def _handle_result(self, from_agent: str, payload: dict, parent_id: str) -> None:
         score, feedback = self._evaluate_result(from_agent, payload)
+        rev_count       = self._revision_counts.get(from_agent, 0)
 
         print(f"[CEO] 📊 Quality score for {from_agent}: {score}/10")
         print(f"[CEO]    Feedback: {feedback}")
 
-        revision_count = self._revision_counts.get(from_agent, 0)
-
-        if score < QUALITY_THRESHOLD and revision_count < MAX_REVISIONS:
-            # ── FEEDBACK LOOP: request revision ──
-            print(f"[CEO] 🔁 Score below threshold. Sending revision_request to {from_agent} "
-                  f"(revision #{revision_count + 1}/{MAX_REVISIONS})")
-            self._revision_counts[from_agent] = revision_count + 1
-
-            revision_msg = build_message(
-                from_agent=AGENT_NAME,
-                to_agent=from_agent,
-                message_type="revision_request",
-                payload={
-                    "original_result": payload,
-                    "feedback": feedback,
-                    "quality_score": score,
-                    "instructions": (
-                        f"Your previous output scored {score}/10. "
-                        f"Feedback: {feedback} "
-                        "Please revise and resubmit a higher-quality result."
-                    ),
-                },
-                parent_message_id=parent_id,
-            )
-            self.bus.send(revision_msg)
-
-        else:
-            # ── Accept the result ──
-            if score < QUALITY_THRESHOLD:
-                print(f"[CEO] ⚠️  Max revisions reached for {from_agent}. Accepting anyway.")
+        # ── DECISION: Revise or Accept? ──
+        if score < self._quality_threshold:
+            if rev_count < self._max_revisions:
+                # ── REQUEST REVISION (within max rounds) ──
+                self._revision_counts[from_agent] = rev_count + 1
+                new_round = self._revision_counts[from_agent]
+                print(
+                    f"[CEO] 🔁 Score {score} < threshold {self._quality_threshold}. "
+                    f"Sending revision_request to {from_agent} "
+                    f"(round {new_round}/{self._max_revisions})"
+                )
+                self.bus.send(build_message(
+                    from_agent=AGENT_NAME,
+                    to_agent=from_agent,
+                    message_type="revision_request",
+                    payload={
+                        "original_result": payload,
+                        "feedback":        feedback,
+                        "quality_score":   score,
+                        "instructions": (
+                            f"Your output scored {score}/10. CEO feedback: {feedback} "
+                            f"Please address this feedback and resubmit an improved result."
+                        ),
+                    },
+                    parent_message_id=parent_id,
+                ))
             else:
-                print(f"[CEO] ✅ Result from {from_agent} accepted.")
+                # ── MAX REVISIONS REACHED: Accept as-is ──
+                print(
+                    f"[CEO] ⚠  Max revisions reached for {from_agent} "
+                    f"({rev_count}/{self._max_revisions}). Accepting output despite score {score}/10."
+                )
+                self._results[from_agent]    = payload
+                self._waiting_for[from_agent] = 0
 
-            self._results[from_agent] = payload
+                self.bus.send(build_message(
+                    from_agent=AGENT_NAME,
+                    to_agent=from_agent,
+                    message_type="confirmation",
+                    payload={"status": "accepted", "score": score},
+                ))
+
+                self._advance_pipeline()
+        else:
+            # ── SCORE ACCEPTABLE: Accept result ──
+            print(f"[CEO] ✅ Result from {from_agent} accepted (score {score}/10).")
+
+            self._results[from_agent]    = payload
             self._waiting_for[from_agent] = 0
 
-            # Send ack
             self.bus.send(build_message(
                 from_agent=AGENT_NAME,
                 to_agent=from_agent,
@@ -274,96 +316,91 @@ Focus each task on what that agent does best."""
                 payload={"status": "accepted", "score": score},
             ))
 
-            self._check_pipeline_progress()
+            self._advance_pipeline()
 
-    def _check_pipeline_progress(self) -> None:
-        """Advance the pipeline based on which results have been accepted."""
+    # ──────────────────────────────────────────
+    #  Pipeline progression
+    # ──────────────────────────────────────────
+    def _advance_pipeline(self) -> None:
+        """Decide what to do next based on accepted results."""
 
-        # After PRODUCT → dispatch ENGINEER + MARKETING
-        if "PRODUCT" in self._results and "ENGINEER" not in self._results and "MARKETING" not in self._results:
-            if self._waiting_for["ENGINEER"] == 0 and self._waiting_for["MARKETING"] == 0:
-                print("[CEO] 🔄 PRODUCT done. Dispatching ENGINEER and MARKETING...")
-                self._dispatch_engineer_and_marketing(self._results["PRODUCT"])
+        # Phase 1 → 2: PRODUCT accepted, dispatch ENGINEER + MARKETING
+        if (
+            "PRODUCT" in self._results
+            and "ENGINEER" not in self._results
+            and "MARKETING" not in self._results
+            and self._waiting_for["ENGINEER"] == 0
+            and self._waiting_for["MARKETING"] == 0
+        ):
+            print("[CEO] 🔄 PRODUCT accepted — dispatching ENGINEER & MARKETING…")
+            self._dispatch_engineer_and_marketing(self._results["PRODUCT"])
+            return
 
-        # After ENGINEER + MARKETING → dispatch QA
+        # Phase 2 → 3: Both ENGINEER + MARKETING accepted, dispatch QA
         if (
             "ENGINEER" in self._results
             and "MARKETING" in self._results
             and "QA" not in self._results
             and self._waiting_for["QA"] == 0
         ):
-            print("[CEO] 🔄 ENGINEER and MARKETING done. Dispatching QA...")
+            print("[CEO] 🔄 ENGINEER & MARKETING accepted — dispatching QA…")
             self._dispatch_qa()
+            return
 
-        # After QA → finalise
+        # Phase 3 → 4: QA result accepted → finalise
         if "QA" in self._results:
             self._finalise()
 
-    def _dispatch_qa(self) -> None:
-        """Send QA task with all artefacts collected so far."""
-        qa_msg = build_message(
-            from_agent=AGENT_NAME,
-            to_agent="QA",
-            message_type="task",
-            payload={
-                "product_spec":      self._results.get("PRODUCT", {}),
-                "html_code":         self._results.get("ENGINEER", {}).get("html_code", ""),
-                "pr_url":            self._results.get("ENGINEER", {}).get("pr_url", ""),
-                "pr_number":         self._results.get("ENGINEER", {}).get("pr_number", 0),
-                "marketing_content": self._results.get("MARKETING", {}),
-                "instructions": (
-                    "Review the HTML landing page against the product spec. "
-                    "Review the marketing content for quality. "
-                    "Post 2 inline comments on the GitHub PR. "
-                    "Return a JSON verdict: pass or fail."
-                ),
-            },
-        )
-        self.bus.send(qa_msg)
-        self._waiting_for["QA"] += 1
-
+    # ──────────────────────────────────────────
+    #  Finalise: QA-driven revision + launch
+    # ──────────────────────────────────────────
     def _finalise(self) -> None:
-        """Post Slack summary and mark project complete.
-
-        QA FEEDBACK LOOP:
-          If QA found any issues and we haven't dispatched a revision yet,
-          send revision_request messages to ENGINEER (HTML issues) and/or
-          MARKETING (copy issues) before posting the final Slack announcement.
         """
+        After QA:
+          1. If issues exist and we haven't looped yet → send targeted revision_requests
+          2. Otherwise → post final Slack announcement and mark complete
+        """
+        # Hold if any revised outputs are still pending
+        if self._waiting_for["ENGINEER"] > 0 or self._waiting_for["MARKETING"] > 0:
+            print("[CEO] ⏳ Holding finalisation — awaiting revised outputs…")
+            return
+
         qa_result = self._results.get("QA", {})
         verdict   = qa_result.get("verdict", "unknown")
         issues    = qa_result.get("issues", [])
 
-        print(f"\n[CEO] 🎯 QA Verdict: {verdict.upper()} | Issues found: {len(issues)}")
+        print(f"\n[CEO] 🎯 QA Verdict: {verdict.upper()} | Issues: {len(issues)}")
 
-        # ─── QA FEEDBACK LOOP ───────────────────────────────────────────────────
+        # ── QA FEEDBACK LOOP (fires once) ────────────────────────────────
         html_issues = [i for i in issues if i.get("type") == "html_issue"]
         mkt_issues  = [i for i in issues if i.get("type") == "marketing_issue"]
 
         if not self._qa_revision_dispatched and (html_issues or mkt_issues):
             self._qa_revision_dispatched = True
-            print(f"[CEO] 🔁 QA found {len(issues)} issue(s) — triggering targeted revision loop!")
+            print(f"[CEO] 🔁 QA found issues — triggering revision loop ({len(issues)} issues)")
+            dispatched = False
 
             if html_issues:
                 fb = " | ".join(
                     f"{i.get('severity','?').upper()}: {i.get('description','')}"
                     for i in html_issues[:3]
                 )
-                rev_msg = build_message(
+                self.bus.send(build_message(
                     from_agent=AGENT_NAME,
                     to_agent="ENGINEER",
                     message_type="revision_request",
                     payload={
                         "original_result": self._results.get("ENGINEER", {}),
-                        "feedback": f"QA Agent found HTML issues — please fix: {fb}",
+                        "feedback": f"QA issues in HTML — please fix: {fb}",
                         "quality_score": qa_result.get("html_review", {}).get("overall_score", 7),
                         "instructions": (
                             "Revise index.html to address QA feedback. "
-                            "Commit the improved file to the same branch and return updated result."
+                            "Commit the improved file to the same branch and return the updated result."
                         ),
                     },
-                )
-                self.bus.send(rev_msg)
+                ))
+                self._waiting_for["ENGINEER"] += 1
+                dispatched = True
                 print("[CEO] 📤 revision_request → ENGINEER (QA HTML feedback)")
 
             if mkt_issues:
@@ -371,53 +408,51 @@ Focus each task on what that agent does best."""
                     f"{i.get('severity','?').upper()}: {i.get('description','')}"
                     for i in mkt_issues[:3]
                 )
-                rev_msg = build_message(
+                self.bus.send(build_message(
                     from_agent=AGENT_NAME,
                     to_agent="MARKETING",
                     message_type="revision_request",
                     payload={
                         "original_result": self._results.get("MARKETING", {}),
-                        "feedback": f"QA Agent found marketing issues — please fix: {fb}",
+                        "feedback": f"QA issues in marketing copy — please fix: {fb}",
                         "quality_score": qa_result.get("marketing_review", {}).get("overall_score", 7),
                         "instructions": (
-                            "Revise all marketing copy (tagline, description, social posts) "
-                            "to address QA feedback and resubmit."
+                            "Revise tagline, description, and social posts to address QA feedback. "
+                            "Resend email and Slack message, then resubmit."
                         ),
                     },
-                )
-                self.bus.send(rev_msg)
+                ))
+                self._waiting_for["MARKETING"] += 1
+                dispatched = True
                 print("[CEO] 📤 revision_request → MARKETING (QA content feedback)")
 
-            # Proceed to Slack announcement even after dispatching (demo: don't wait for a re-run)
-            print("[CEO] ℹ️  Revision requests dispatched. Proceeding to final announcement...")
+            if dispatched:
+                print("[CEO] ⏳ Revision requests sent. Pipeline paused until agents respond…")
+                return
 
         elif self._qa_revision_dispatched:
-            print("[CEO] ℹ️  QA revision already dispatched in previous cycle.")
+            print("[CEO] ℹ  QA revision loop completed. Proceeding to launch.")
         else:
-            print("[CEO] ✅ QA found no issues — proceeding directly to announcement.")
-        # ─────────────────────────────────────────────────────────────────────────
+            print("[CEO] ✅ QA found no actionable issues — proceeding to launch.")
+        # ─────────────────────────────────────────────────────────────────
 
-        # Build Slack announcement
-        engineer_result  = self._results.get("ENGINEER", {})
-        marketing_result = self._results.get("MARKETING", {})
+        # ── Launch announcement ──
+        eng_r = self._results.get("ENGINEER", {})
+        mkt_r = self._results.get("MARKETING", {})
 
-        tagline     = marketing_result.get("tagline", "Study smarter, not harder.")
-        description = marketing_result.get("description", "AI Study Planner helps students manage their time.")
-        pr_url      = engineer_result.get("pr_url", "https://github.com/Hasankhan2003/launchmind")
+        tagline     = mkt_r.get("tagline", "Study smarter. Stress less.")
+        description = mkt_r.get("description", "AI Study Planner — your AI-powered study buddy.")
+        pr_url      = eng_r.get("pr_url", "https://github.com/Hasankhan2003/launchmind")
 
         try:
-            blocks = build_launch_blocks(
-                tagline=tagline,
-                description=description,
-                pr_url=pr_url,
-            )
+            blocks = build_launch_blocks(tagline=tagline, description=description, pr_url=pr_url)
             send_block_message(
                 text=f"🚀 AI Study Planner is LIVE! {tagline}",
                 blocks=blocks,
             )
-            print("[CEO] ✅ Final Slack announcement posted.")
+            print("[CEO] ✅ Final Slack launch announcement posted.")
         except Exception as e:
-            print(f"[CEO] ⚠️  Slack announcement failed: {e}")
+            print(f"[CEO] ⚠  Slack announcement failed: {e}")
 
         print("\n" + "="*60)
         print("[CEO] 🏁 PROJECT COMPLETE — LaunchMind pipeline finished.")
@@ -425,59 +460,87 @@ Focus each task on what that agent does best."""
         self._project_complete = True
 
     # ──────────────────────────────────────────
-    #  LLM-powered quality evaluation
+    #  LLM: quality rubric evaluation
     # ──────────────────────────────────────────
     def _evaluate_result(self, agent: str, payload: dict) -> tuple[int, str]:
         """
-        Use LLM to score the result from an agent (0–10).
-        Returns (score, feedback_string).
+        Score the result from an agent on a 0–10 rubric using the LLM.
+        Returns (score: int, feedback: str).
         """
-        print(f"[CEO] 🧠 Evaluating result from {agent} using LLM...")
+        print(f"[CEO] 🧠 Evaluating {agent} output with LLM quality rubric…")
 
-        prompt = f"""You are the CEO of a startup accelerator reviewing output from your {agent} Agent.
-The startup is: "{self.idea}"
+        # Agent-specific rubric context
+        rubric_context = {
+            "PRODUCT": (
+                "Check: Does it have a clear value proposition? "
+                "Are there at least 3 personas with specific pain points? "
+                "Are there at least 5 features with priorities? "
+                "Are there at least 4 user stories in 'As a… I want… so that…' format?"
+            ),
+            "ENGINEER": (
+                "Check: Is the HTML complete with a hero, features, CTA, and footer? "
+                "Does it look modern and professional? "
+                "Were GitHub operations (branch, commit, issue, PR) completed successfully?"
+            ),
+            "MARKETING": (
+                "Check: Is the tagline under 10 words and emotionally compelling? "
+                "Does the description clearly explain the product value? "
+                "Are social posts platform-appropriate and engaging? "
+                "Is the cold email personalized and actionable?"
+            ),
+            "QA": (
+                "Check: Is the QA verdict clearly justified? "
+                "Are specific, actionable issues listed? "
+                "Did the QA agent post PR comments? "
+                "Is the overall assessment balanced and useful?"
+            ),
+        }.get(agent, "Check: Is the output complete, accurate, and high-quality?")
 
-Agent Output (JSON):
+        prompt = f"""You are the CEO of a startup accelerator critically evaluating your {agent} Agent's output.
+
+Startup: "{self.idea}"
+
+{agent} Agent Output (JSON):
 {json.dumps(payload, indent=2)[:3000]}
 
-Evaluate the quality of this output on a scale of 0 to 10 where:
-  10 = exceptional, exceeds expectations
-  7–9 = good quality, meets requirements
-  5–6 = acceptable but could be improved
-  0–4 = poor quality, needs significant revision
+Evaluation Rubric:
+{rubric_context}
 
-Respond ONLY with a JSON object (no markdown):
+Scoring Scale:
+  9–10 = Exceptional — exceeds all requirements, publication-ready
+   7–8 = Good — meets all requirements with minor room for improvement
+   5–6 = Acceptable — meets most requirements but has notable gaps
+   0–4 = Poor — significant gaps or errors that must be fixed
+
+Respond ONLY with a raw JSON object (no markdown, no fences):
 {{
   "score": <integer 0-10>,
-  "feedback": "<one or two sentences explaining the score and what to improve>"
+  "feedback": "<2-3 specific, actionable sentences explaining the score and exactly what to improve>"
 }}"""
 
-        raw = send_prompt_json(prompt, temperature=0.2)
+        raw    = send_prompt_json(prompt, temperature=0.2)
         result = self._parse_json(raw, default={"score": 7, "feedback": "Acceptable output."})
-        score    = int(result.get("score", 7))
-        score    = max(0, min(10, score))  # clamp
+        score    = max(0, min(10, int(result.get("score", 7))))
         feedback = str(result.get("feedback", ""))
         return score, feedback
 
     # ──────────────────────────────────────────
-    #  Helper
+    #  Helpers
     # ──────────────────────────────────────────
     @staticmethod
     def _parse_json(raw: str, default: dict) -> dict:
-        """Safely parse JSON from LLM output, with fallback."""
+        """Robustly parse JSON from LLM output, with fallback default."""
         try:
-            # Strip markdown fences if present
             clean = re.sub(r"```(?:json)?", "", raw).strip().rstrip("`").strip()
             return json.loads(clean)
         except Exception:
-            # Try to extract JSON object
-            match = re.search(r"\{.*\}", raw, re.DOTALL)
-            if match:
+            m = re.search(r"\{.*\}", raw, re.DOTALL)
+            if m:
                 try:
-                    return json.loads(match.group())
+                    return json.loads(m.group())
                 except Exception:
                     pass
-            print(f"[CEO] ⚠️  Could not parse JSON, using default. Raw: {raw[:200]}")
+            print(f"[CEO] ⚠  JSON parse failed, using default. Raw snippet: {raw[:200]}")
             return default
 
     @property

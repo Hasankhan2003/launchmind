@@ -1,16 +1,20 @@
 """
 agents/product_agent.py - Product Agent for LaunchMind
 
+ROLE:
+  Senior Product Manager at a startup accelerator.
+
 RESPONSIBILITIES:
-  1. Receive task from CEO Agent
-  2. Use LLM to generate a full product specification:
-     - Value proposition
-     - User personas (name, role, pain_point)
-     - Features (name, description, priority)
-     - User stories
-  3. Send the spec to ENGINEER and MARKETING
-  4. Send confirmation to CEO
-  5. Handle revision_request from CEO (regenerate with feedback)
+  1. Receive a task from the CEO Agent via the MessageBus
+  2. Use the LLM to generate a complete, investor-ready product specification:
+       - value_proposition  (1-2 sharp sentences)
+       - personas           (3 named personas with role + pain_point)
+       - features           (≥5 with name, description, priority)
+       - user_stories       (≥4 in "As a… I want… so that…" format)
+       - monetization       (pricing model)
+       - tone               (brand voice descriptor)
+  3. Send the spec back to the CEO for quality evaluation
+  4. Handle revision_request: incorporate CEO feedback and resubmit
 """
 
 import json
@@ -29,9 +33,8 @@ class ProductAgent:
     #  Main processing tick
     # ──────────────────────────────────────────
     def process(self) -> None:
-        """Called each tick by main.py. Drains and processes inbox messages."""
-        messages = self.bus.fetch(AGENT_NAME)
-        for msg in messages:
+        """Called each tick by main.py. Drains and processes inbox."""
+        for msg in self.bus.fetch(AGENT_NAME):
             self._handle_message(msg)
 
     # ──────────────────────────────────────────
@@ -41,95 +44,132 @@ class ProductAgent:
         mtype = msg["message_type"]
 
         if mtype == "task":
-            print(f"\n[PRODUCT] 📬 Received task from {msg['from_agent']}")
+            print(f"\n[PRODUCT] 📬 Task received from {msg['from_agent']}")
             spec = self._generate_product_spec(msg["payload"])
-            self._send_results(spec, parent_id=msg["message_id"])
+            self._send_result(spec, parent_id=msg["message_id"])
 
         elif mtype == "revision_request":
             print(f"\n[PRODUCT] 🔁 Revision request from {msg['from_agent']}")
-            feedback    = msg["payload"].get("feedback", "")
-            original    = msg["payload"].get("original_result", {})
-            revised     = self._revise_product_spec(original, feedback)
-            self._send_results(revised, parent_id=msg["message_id"])
+            feedback = msg["payload"].get("feedback", "")
+            original = msg["payload"].get("original_result", {})
+            score    = msg["payload"].get("quality_score", 0)
+            revised  = self._revise_product_spec(original, feedback, score)
+            self._send_result(revised, parent_id=msg["message_id"])
 
         else:
-            print(f"[PRODUCT] ℹ️  Ignoring message type '{mtype}' from {msg['from_agent']}")
+            print(f"[PRODUCT] ℹ  Ignoring '{mtype}' from {msg['from_agent']}")
 
     # ──────────────────────────────────────────
-    #  LLM: generate product spec
+    #  LLM: generate product specification
     # ──────────────────────────────────────────
     def _generate_product_spec(self, task_payload: dict) -> dict:
         idea  = task_payload.get("idea", "")
         task  = task_payload.get("task", {})
-        extra = task_payload.get("instructions", "")
 
-        print("[PRODUCT] 🧠 Generating product specification with LLM...")
+        print("[PRODUCT] 🧠 Generating product specification (LLM)…")
 
-        prompt = f"""You are a senior Product Manager at a startup accelerator.
+        value_prop_hint = task.get("context", idea)
+        deliverables    = task.get("deliverables", [])
 
-Startup idea: "{idea}"
+        prompt = f"""You are a Senior Product Manager at a world-class startup accelerator with deep experience in EdTech products.
 
-Your task: {task.get('objective', extra)}
-Deliverables: {task.get('deliverables', [])}
+You have been assigned to produce a complete product specification for the following startup:
 
-Generate a comprehensive product specification as a VALID JSON object with NO markdown, code fences, or extra text:
+Startup Idea: "{idea}"
+Strategic Context: {value_prop_hint}
+Required Deliverables: {deliverables}
+
+Your output will be reviewed by the CEO and used directly by Engineering and Marketing teams. Quality matters.
+
+Return a VALID JSON object with NO markdown, NO code fences, NO extra text — raw JSON only:
 
 {{
   "startup_name": "AI Study Planner",
-  "value_proposition": "<1-2 sentences on what makes this product unique and valuable>",
+  "value_proposition": "<1-2 sentences. What specific problem does this solve? Why is the solution uniquely valuable? Be concrete, not generic.>",
   "personas": [
     {{
-      "name": "<persona name>",
-      "role": "<e.g. University Student>",
-      "pain_point": "<specific study-related pain point>"
+      "name": "<persona first name>",
+      "role": "<e.g. 'Second-Year Engineering Student'>",
+      "pain_point": "<very specific study-related struggle this person faces daily>"
     }},
     {{
-      "name": "<persona name>",
-      "role": "<e.g. Exam Preparer>",
-      "pain_point": "<specific pain point>"
+      "name": "<persona first name>",
+      "role": "<different academic profile>",
+      "pain_point": "<specific pain point distinct from persona 1>"
     }},
     {{
-      "name": "<persona name>",
-      "role": "<e.g. Procrastinator>",
-      "pain_point": "<specific pain point>"
+      "name": "<persona first name>",
+      "role": "<e.g. 'Part-Time Working Student'>",
+      "pain_point": "<specific time-management pain point>"
     }}
   ],
   "features": [
     {{
       "name": "<feature name>",
-      "description": "<clear 1-sentence description>",
-      "priority": "high | medium | low"
+      "description": "<exactly one sentence: what it does and why it matters>",
+      "priority": "high"
+    }},
+    {{
+      "name": "<feature name>",
+      "description": "<one sentence>",
+      "priority": "high"
+    }},
+    {{
+      "name": "<feature name>",
+      "description": "<one sentence>",
+      "priority": "medium"
+    }},
+    {{
+      "name": "<feature name>",
+      "description": "<one sentence>",
+      "priority": "medium"
+    }},
+    {{
+      "name": "<feature name>",
+      "description": "<one sentence>",
+      "priority": "low"
     }}
   ],
   "user_stories": [
-    "As a <role>, I want to <action> so that <benefit>.",
-    "As a <role>, I want to <action> so that <benefit>.",
-    "As a <role>, I want to <action> so that <benefit>.",
-    "As a <role>, I want to <action> so that <benefit>."
+    "As a <role>, I want to <specific action> so that <measurable benefit>.",
+    "As a <role>, I want to <specific action> so that <measurable benefit>.",
+    "As a <role>, I want to <specific action> so that <measurable benefit>.",
+    "As a <role>, I want to <specific action> so that <measurable benefit>."
   ],
-  "monetization": "<describe the freemium or pricing model>",
-  "tone": "<describe the product tone: e.g. empathetic, motivating, calm>"
+  "monetization": "<describe a concrete freemium or tiered pricing model with specific price points>",
+  "tone": "<describe brand voice in 2-3 adjectives with brief explanation — e.g. 'Empathetic and direct: we speak to students like a knowledgeable friend, not a corporation'>"
 }}
 
-Include at least 5 features. Be specific to the study planning domain."""
+Rules:
+- Personas must have DIFFERENT roles and DIFFERENT pain points
+- Features must be specific to study planning (not generic SaaS features)
+- User stories must follow exact format: "As a..., I want to..., so that..."
+- Include at least 5 features (you may add more)
+- Value proposition must mention both the problem AND the mechanism of solution"""
 
         raw  = send_prompt_json(prompt, temperature=0.5)
         spec = self._parse_json(raw, self._default_spec())
-        print("[PRODUCT] ✅ Product specification generated.")
+        print(f"[PRODUCT] ✅ Spec generated — {len(spec.get('features', []))} features, "
+              f"{len(spec.get('personas', []))} personas, "
+              f"{len(spec.get('user_stories', []))} user stories.")
         return spec
 
-    def _revise_product_spec(self, original: dict, feedback: str) -> dict:
-        """Use LLM to revise the spec based on CEO feedback."""
-        print(f"[PRODUCT] 🧠 Revising spec based on feedback: '{feedback}'")
+    def _revise_product_spec(self, original: dict, feedback: str, score: int) -> dict:
+        """Use LLM to produce an improved spec addressing the CEO's specific feedback."""
+        print(f"[PRODUCT] 🧠 Revising spec (CEO score was {score}/10) — addressing: '{feedback}'")
 
-        prompt = f"""You are a Product Manager revising a product specification based on CEO feedback.
+        prompt = f"""You are a Senior Product Manager revising a product specification after CEO review.
 
-Original spec:
-{json.dumps(original, indent=2)[:2000]}
+CEO Feedback (score {score}/10):
+"{feedback}"
 
-CEO feedback: "{feedback}"
+Current Specification:
+{json.dumps(original, indent=2)[:2500]}
 
-Produce an IMPROVED version addressing the feedback. Return ONLY valid JSON (same structure, no markdown):
+Your task: Produce a SIGNIFICANTLY IMPROVED version that directly addresses every point in the CEO feedback.
+Do NOT just make cosmetic changes — make substantive improvements.
+
+Return ONLY valid JSON (same structure, no markdown, no explanation):
 
 {{
   "startup_name": "AI Study Planner",
@@ -147,18 +187,16 @@ Produce an IMPROVED version addressing the feedback. Return ONLY valid JSON (sam
         return spec
 
     # ──────────────────────────────────────────
-    #  Send results to CEO, Engineer, Marketing
+    #  Send result to CEO
     # ──────────────────────────────────────────
-    def _send_results(self, spec: dict, parent_id: str) -> None:
-        # 1. Report back to CEO
-        ceo_msg = build_message(
+    def _send_result(self, spec: dict, parent_id: str) -> None:
+        self.bus.send(build_message(
             from_agent=AGENT_NAME,
             to_agent="CEO",
             message_type="result",
             payload=spec,
             parent_message_id=parent_id,
-        )
-        self.bus.send(ceo_msg)
+        ))
         print("[PRODUCT] 📤 Spec sent to CEO for evaluation.")
 
     # ──────────────────────────────────────────
@@ -170,13 +208,13 @@ Produce an IMPROVED version addressing the feedback. Return ONLY valid JSON (sam
             clean = re.sub(r"```(?:json)?", "", raw).strip().rstrip("`").strip()
             return json.loads(clean)
         except Exception:
-            match = re.search(r"\{.*\}", raw, re.DOTALL)
-            if match:
+            m = re.search(r"\{.*\}", raw, re.DOTALL)
+            if m:
                 try:
-                    return json.loads(match.group())
+                    return json.loads(m.group())
                 except Exception:
                     pass
-            print(f"[PRODUCT] ⚠️  JSON parse failed, using default. Raw: {raw[:200]}")
+            print(f"[PRODUCT] ⚠  JSON parse failed, using default. Raw: {raw[:200]}")
             return default
 
     @staticmethod
@@ -184,27 +222,40 @@ Produce an IMPROVED version addressing the feedback. Return ONLY valid JSON (sam
         return {
             "startup_name": "AI Study Planner",
             "value_proposition": (
-                "AI Study Planner converts your syllabus and exam deadlines into "
-                "a personalized daily study schedule, reducing academic stress."
+                "AI Study Planner eliminates exam-time panic by converting any university "
+                "syllabus and set of deadlines into a balanced, personalized daily study schedule "
+                "— so students always know exactly what to study and when."
             ),
             "personas": [
-                {"name": "Alex", "role": "University Student", "pain_point": "Overwhelmed by multiple courses"},
-                {"name": "Sam",  "role": "Exam Preparer",      "pain_point": "Doesn't know how to allocate study time"},
-                {"name": "Jordan","role": "Procrastinator",    "pain_point": "Leaves everything to the last minute"},
+                {
+                    "name": "Alex",
+                    "role": "Second-Year Engineering Student",
+                    "pain_point": "Juggles 6 courses with overlapping deadlines and has no system to prioritize study time."
+                },
+                {
+                    "name": "Sara",
+                    "role": "Pre-Med High Achiever",
+                    "pain_point": "Needs maximum retention across dense material but wastes hours deciding what to study next."
+                },
+                {
+                    "name": "Jordan",
+                    "role": "Part-Time Working Student",
+                    "pain_point": "Has only 3-4 hours per day to study and needs every minute to count toward exam readiness."
+                },
             ],
             "features": [
-                {"name": "Schedule Generator",    "description": "Creates a daily study plan from syllabus input.", "priority": "high"},
-                {"name": "Deadline Tracker",      "description": "Monitors exam and assignment deadlines.",         "priority": "high"},
-                {"name": "Workload Balancer",     "description": "Distributes study load evenly across days.",     "priority": "high"},
-                {"name": "Daily Recommendations", "description": "Suggests what to study each day.",              "priority": "medium"},
-                {"name": "Progress Tracker",      "description": "Tracks completed topics and milestones.",       "priority": "medium"},
+                {"name": "Syllabus Import", "description": "Upload or paste your course syllabus; AI extracts topics and assigns weights automatically.", "priority": "high"},
+                {"name": "Smart Schedule Generator", "description": "Creates a daily study plan that balances all courses based on exam proximity and topic complexity.", "priority": "high"},
+                {"name": "Deadline Tracker", "description": "Visual countdown dashboard for every exam and assignment due date.", "priority": "high"},
+                {"name": "Daily Focus Mode", "description": "Shows only today's study tasks to eliminate decision fatigue and boost consistency.", "priority": "medium"},
+                {"name": "Progress Analytics", "description": "Tracks completed topics per subject and shows a readiness score so students know where to focus.", "priority": "medium"},
             ],
             "user_stories": [
-                "As a student, I want to input my syllabus so that I get a daily study plan.",
-                "As a student, I want to set exam dates so that I never miss a deadline.",
-                "As a procrastinator, I want daily reminders so that I stay on track.",
-                "As an exam preparer, I want balanced study loads so that I avoid burnout.",
+                "As an overwhelmed student, I want to upload my syllabus so that I receive a structured daily study plan without any manual planning.",
+                "As a working student, I want to set my available hours per day so that the AI builds a realistic schedule I can actually follow.",
+                "As an exam preparer, I want to see a readiness score per subject so that I know exactly where to focus my remaining time.",
+                "As a procrastinator, I want daily push notifications so that I start studying before it is too late to prepare properly.",
             ],
-            "monetization": "Freemium — basic schedule is free; premium unlocks analytics and reminders.",
-            "tone": "Empathetic, motivating, calm — focused on reducing stress.",
+            "monetization": "Freemium — core scheduling is free forever; Premium ($9.99/month) adds calendar sync, AI topic summaries, and study group features.",
+            "tone": "Empathetic and direct — we speak to students like a knowledgeable friend who has been through exam stress, not a corporate productivity tool.",
         }
