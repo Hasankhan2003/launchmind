@@ -105,78 +105,60 @@
       font-size: 1.5rem;
       margin-bottom: 2rem;
     }
-    #hero .value-proposition {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-    #hero .email-form {
+    section#features {
+      padding: 4rem 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
     }
-    #hero .email-input {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-    }
-    #hero .email-submit {
-      background: var(--primary-gradient);
-      color: var(--text-primary);
-      border: none;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      cursor: pointer;
-      border-radius: 0.5rem;
-      transition: transform 0.2s ease;
-      margin-top: 1rem;
-    }
-    #hero .email-submit:hover {
-      transform: scale(1.05);
-    }
-    #hero .email-submit:active {
-      transform: scale(0.95);
-    }
-    section#features {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-    }
     #features .feature {
-      background: var(--card-background);
+      background-color: var(--card-background);
       border: var(--card-border);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 0.5rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-radius: 1rem;
+      width: 80%;
     }
     #features .feature h2 {
-      font-size: 1.2rem;
-      margin-bottom: 0.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
     }
     #features .feature p {
       font-size: 1rem;
+      margin-bottom: 2rem;
     }
-    section#testimonials {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    section#call-to-action {
       padding: 2rem;
+      display: flex;
+      justify-content: center;
     }
-    #testimonials .testimonial {
-      background: var(--card-background);
-      border: var(--card-border);
-      padding: 1rem;
-      margin-bottom: 1rem;
+    #call-to-action .cta-button {
+      background: var(--primary-gradient);
+      color: var(--text-primary);
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      cursor: pointer;
       border-radius: 0.5rem;
+      transition: transform 0.2s ease;
     }
-    #testimonials .testimonial p {
-      font-size: 1rem;
+    #call-to-action .cta-button:hover {
+      transform: scale(1.05);
+    }
+    #call-to-action .cta-button:active {
+      transform: scale(0.95);
     }
     footer {
       background-color: var(--dark-background);
-      padding: 1rem;
-      text-align: center;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    footer p {
+      font-size: 0.8rem;
       color: var(--text-secondary);
     }
   </style>
@@ -192,40 +174,28 @@
     <section id="hero">
       <div class="orb"></div>
       <h1 class="headline">AI Study Planner</h1>
-      <p class="sub-headline">Plan your studies with AI</p>
-      <p class="value-proposition">Get personalized study plans, track your progress, and achieve your goals with our AI-powered study planner.</p>
-      <form class="email-form">
-        <input type="email" class="email-input" placeholder="Enter your email">
-        <button class="email-submit">Get Started</button>
-      </form>
+      <p class="sub-headline">Plan your studies with AI-powered tools</p>
     </section>
     <section id="features">
-      <h1>Features</h1>
       <div class="feature">
         <h2>Personalized Study Plans</h2>
-        <p>Get customized study plans based on your goals and schedule.</p>
+        <p>Get customized study plans based on your goals and schedule</p>
       </div>
       <div class="feature">
-        <h2>Progress Tracking</h2>
-        <p>Track your progress and stay motivated with our interactive dashboard.</p>
+        <h2>AI-powered Learning Analytics</h2>
+        <p>Track your progress and identify areas for improvement with our AI-powered analytics</p>
       </div>
       <div class="feature">
-        <h2>AI-powered Recommendations</h2>
-        <p>Get recommendations for study materials, resources, and techniques based on your learning style.</p>
+        <h2>Community Support</h2>
+        <p>Join our community of students and get support from peers and mentors</p>
       </div>
     </section>
-    <section id="testimonials">
-      <h1>Testimonials</h1>
-      <div class="testimonial">
-        <p>"AI Study Planner has been a game-changer for me. I've never been more organized and focused in my studies."</p>
-      </div>
-      <div class="testimonial">
-        <p>"I was skeptical at first, but the personalized study plans and progress tracking have really helped me stay on track."</p>
-      </div>
+    <section id="call-to-action">
+      <button class="cta-button">Sign Up Now</button>
     </section>
   </main>
   <footer>
-    <p>&copy; 2023 AI Study Planner</p>
+    <p>&copy; 2024 AI Study Planner. All rights reserved.</p>
   </footer>
 </body>
 </html>
