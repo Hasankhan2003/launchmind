@@ -5,58 +5,168 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Study Planner</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
     :root {
-      --indigo: #6366f1;
-      --purple: #8b5cf6;
-      --glass: rgba(255, 255, 255, 0.2);
+      --primary-color: #6366f1;
+      --secondary-color: #8b5cf6;
+      --background-color: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%);
+      --glass-color: rgba(255, 255, 255, 0.2);
+      --box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
     }
     body {
-      background: linear-gradient(135deg, var(--indigo), var(--purple));
-      background-size: 400% 400%;
-      animation: gradient 10s ease infinite;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    @keyframes gradient {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
+      font-family: 'Inter', sans-serif;
+      background: var(--background-color);
+      color: #fff;
+      line-height: 1.6;
+      padding: 2rem;
     }
     .container {
       max-width: 1200px;
-      margin: 40px auto;
-      padding: 20px;
+      margin: 0 auto;
+      padding: 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
     }
     .hero {
-      background: var(--glass);
-      border-radius: 20px;
-      padding: 40px;
+      background: var(--glass-color);
+      padding: 4rem;
+      border-radius: 1rem;
+      box-shadow: var(--box-shadow);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-      animation: fade-in 1s ease-in-out;
+      animation: fade-in 1s;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .hero button {
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 0.5rem;
+      animation: fade-in 1s;
+    }
+    .hero button:hover {
+      background: var(--secondary-color);
+    }
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 4rem;
+    }
+    .feature {
+      background: var(--glass-color);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: var(--box-shadow);
+      margin: 1rem;
+      width: calc(33.33% - 2rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: fade-in 1s;
+    }
+    .feature:hover {
+      transform: scale(1.05);
+    }
+    .feature i {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .how-it-works {
+      margin-top: 4rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .step {
+      background: var(--glass-color);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: var(--box-shadow);
+      margin: 1rem;
+      width: calc(33.33% - 2rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: fade-in 1s;
+    }
+    .step h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .pricing {
+      margin-top: 4rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .plan {
+      background: var(--glass-color);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: var(--box-shadow);
+      margin: 1rem;
+      width: calc(50% - 2rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: fade-in 1s;
+    }
+    .plan h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .plan ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .plan li {
+      margin-bottom: 0.5rem;
+    }
+    .plan button {
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 0.5rem;
+      animation: fade-in 1s;
+    }
+    .plan button:hover {
+      background: var(--secondary-color);
+    }
+    .footer {
+      margin-top: 4rem;
+      text-align: center;
+      font-size: 0.8rem;
     }
     @keyframes fade-in {
       from {
@@ -66,76 +176,81 @@
         opacity: 1;
       }
     }
-    .hero h1 {
-      font-size: 36px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 10px;
-    }
-    .hero p {
-      font-size: 18px;
-      color: #fff;
-      margin-bottom: 20px;
-    }
-    .hero button {
-      background: var(--indigo);
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 10px;
-      transition: background 0.3s ease-in-out;
-    }
-    .hero button:hover {
-      background: #5a5aff;
-    }
-    .features {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin-top: 40px;
-    }
-    .feature {
-      background: var(--glass);
-      border-radius: 20px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-      margin-bottom: 20px;
-    }
-    .feature img {
-      width: 40px;
-      height: 40px;
-      margin-bottom: 10px;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="hero">
       <h1>AI Study Planner</h1>
-      <p>Plan your studies with AI-powered tools</p>
+      <p>Get a personalized study plan based on your syllabus and exam deadlines</p>
       <button>Get Started</button>
     </div>
     <div class="features">
       <div class="feature">
-        <img src="icon1.png" alt="Icon 1">
-        <p>This is feature 1.</p>
+        <i>📚</i>
+        <h2>Syllabus Upload</h2>
+        <p>Upload your syllabus and exam schedule to generate a personalized study plan</p>
       </div>
       <div class="feature">
-        <img src="icon2.png" alt="Icon 2">
-        <p>This is feature 2.</p>
+        <i>📆</i>
+        <h2>Exam Deadline Tracking</h2>
+        <p>Track upcoming exam deadlines and receive reminders and notifications to stay on track</p>
       </div>
       <div class="feature">
-        <img src="icon3.png" alt="Icon 3">
-        <p>This is feature 3.</p>
+        <i>📊</i>
+        <h2>Study Material Prioritization</h2>
+        <p>Prioritize study materials based on importance and difficulty, ensuring you focus on the most critical topics first</p>
       </div>
     </div>
+    <div class="how-it-works">
+      <div class="step">
+        <h2>Step 1: Upload Your Syllabus</h2>
+        <p>Upload your syllabus and exam schedule to get started</p>
+      </div>
+      <div class="step">
+        <h2>Step 2: Get Your Personalized Study Plan</h2>
+        <p>Our AI algorithm will generate a personalized study plan based on your syllabus and exam deadlines</p>
+      </div>
+      <div class="step">
+        <h2>Step 3: Track Your Progress and Stay on Track</h2>
+        <p>Track your progress and stay on track with our study plan and reminders</p>
+      </div>
+    </div>
+    <div class="pricing">
+      <div class="plan">
+        <h2>Free Plan</h2>
+        <ul>
+          <li>Upload your syllabus and exam schedule</li>
+          <li>Get a basic study plan</li>
+          <li>Track your progress</li>
+        </ul>
+        <button>Sign Up</button>
+      </div>
+      <div class="plan">
+        <h2>Premium Plan</h2>
+        <ul>
+          <li>Upload your syllabus and exam schedule</li>
+          <li>Get a personalized study plan</li>
+          <li>Track your progress and receive reminders and notifications</li>
+          <li>Prioritize study materials based on importance and difficulty</li>
+        </ul>
+        <button>Upgrade to Premium</button>
+      </div>
+    </div>
+    <div class="footer">
+      <p>&copy; 2023 AI Study Planner</p>
+    </div>
+    <form id="signup-form">
+      <input type="email" id="email" placeholder="Enter your email address">
+      <button type="submit">Sign Up</button>
+    </form>
   </div>
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var email = document.getElementById('email').value;
+      alert('Thank you for signing up! We will send you a confirmation email to ' + email);
+    });
+  </script>
 </body>
 </html>
