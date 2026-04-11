@@ -80,29 +80,23 @@
       align-items: center;
       justify-content: center;
       transition: transform 0.3s ease;
-      cursor: pointer;
-    }
-    .feature:hover {
-      transform: scale(1.05);
-    }
-    .feature i {
-      font-size: 24px;
-      margin-bottom: 10px;
     }
     .feature h2 {
-      font-size: 18px;
+      font-size: 24px;
+      font-weight: 600;
+      color: #fff;
       margin-bottom: 10px;
     }
     .feature p {
-      font-size: 14px;
+      font-size: 16px;
       color: #fff;
-      opacity: 0.8;
+      margin-bottom: 20px;
     }
     @keyframes fadeIn {
-      0% {
+      from {
         opacity: 0;
       }
-      100% {
+      to {
         opacity: 1;
       }
     }
@@ -111,7 +105,7 @@
         transform: scale(1);
       }
       50% {
-        transform: scale(1.05);
+        transform: scale(1.1);
       }
       100% {
         transform: scale(1);
@@ -122,58 +116,24 @@
 <body>
   <div class="container">
     <div class="hero">
-      <h1>Welcome to AI Study Planner</h1>
-      <p>Get the most out of your study sessions with our AI-powered planner</p>
-      <button onclick="openModal()">Get Started</button>
+      <h1>AI Study Planner</h1>
+      <p>Unlock your full potential with our AI-powered study planner. Get personalized learning plans, track your progress, and achieve your goals.</p>
+      <button>Get Started</button>
     </div>
     <div class="features">
       <div class="feature">
-        <i class="fas fa-robot"></i>
-        <h2>AI-Powered Planning</h2>
-        <p>Our AI algorithm helps you create a personalized study plan tailored to your needs</p>
+        <h2>Personalized Learning</h2>
+        <p>Our AI-powered study planner creates customized learning plans tailored to your needs and goals.</p>
       </div>
       <div class="feature">
-        <i class="fas fa-calendar"></i>
-        <h2>Schedule Management</h2>
-        <p>Easily manage your schedule and set reminders for upcoming study sessions</p>
-      </div>
-      <div class="feature">
-        <i class="fas fa-chart-line"></i>
         <h2>Progress Tracking</h2>
-        <p>Track your progress and stay motivated with our interactive progress charts</p>
+        <p>Track your progress and stay motivated with our interactive dashboard and progress charts.</p>
+      </div>
+      <div class="feature">
+        <h2>Goal Achievement</h2>
+        <p>Achieve your goals with our AI-driven study planner, which helps you stay focused and on track.</p>
       </div>
     </div>
   </div>
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Get Started with AI Study Planner</h2>
-      <p>Enter your email address to receive a free trial</p>
-      <input type="email" id="email" placeholder="Enter your email address">
-      <button onclick="sendEmail()">Send</button>
-    </div>
-  </div>
-  <script>
-    function openModal() {
-      document.getElementById("modal").style.display = "block";
-    }
-    function closeModal() {
-      document.getElementById("modal").style.display = "none";
-    }
-    document.getElementsByClassName("close")[0].onclick = function() {
-      closeModal();
-    }
-    window.onclick = function(event) {
-      if (event.target == document.getElementById("modal")) {
-        closeModal();
-      }
-    }
-    function sendEmail() {
-      var email = document.getElementById("email").value;
-      alert("Thank you for signing up! We will send you a free trial link to " + email);
-      closeModal();
-    }
-  </script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
 </body>
 </html>
