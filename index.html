@@ -83,107 +83,29 @@
       font-size: 16px;
       margin-bottom: 20px;
     }
-    .how-it-works {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-    .how-it-works h2 {
-      font-size: 36px;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-    .how-it-works p {
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
-    .accordion {
-      width: 100%;
-      max-width: 800px;
-      margin: 20px auto;
-    }
-    .accordion-item {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      padding: 20px;
-      margin: 10px;
-      width: 100%;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .accordion-item h3 {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 10px;
-      cursor: pointer;
-    }
-    .accordion-item p {
-      font-size: 16px;
-      margin-bottom: 20px;
-      display: none;
-    }
-    .accordion-item.active p {
-      display: block;
-    }
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="hero">
       <h1>Welcome to AI Study Planner</h1>
-      <p>Plan your studies with our AI-powered tool</p>
+      <p>Unlock your full potential with our AI-powered study planning tool. Get personalized recommendations, track your progress, and achieve your goals.</p>
       <button>Get Started</button>
     </div>
     <div class="features">
       <div class="feature">
         <h2>Personalized Learning</h2>
-        <p>Our AI algorithm creates a customized learning plan for you</p>
+        <p>Our AI algorithm creates a customized learning plan tailored to your needs and goals.</p>
       </div>
       <div class="feature">
-        <h2>Intelligent Scheduling</h2>
-        <p>Our tool schedules your study sessions for maximum productivity</p>
+        <h2>Intelligent Time Management</h2>
+        <p>Optimize your study schedule with our intelligent time management system, ensuring you make the most of your time.</p>
       </div>
       <div class="feature">
-        <h2>Real-time Progress Tracking</h2>
-        <p>Track your progress in real-time and stay motivated</p>
-      </div>
-    </div>
-    <div class="how-it-works">
-      <h2>How it Works</h2>
-      <p>Our AI Study Planner uses machine learning algorithms to create a personalized learning plan for you. Simply sign up, take our assessment, and start studying with our intelligent scheduling tool.</p>
-      <div class="accordion">
-        <div class="accordion-item">
-          <h3>Step 1: Sign Up</h3>
-          <p>Sign up for our platform and create an account</p>
-        </div>
-        <div class="accordion-item">
-          <h3>Step 2: Take the Assessment</h3>
-          <p>Take our assessment to determine your learning style and goals</p>
-        </div>
-        <div class="accordion-item">
-          <h3>Step 3: Start Studying</h3>
-          <p>Start studying with our intelligent scheduling tool and track your progress in real-time</p>
-        </div>
+        <h2>Real-Time Progress Tracking</h2>
+        <p>Monitor your progress in real-time, identify areas for improvement, and adjust your strategy accordingly.</p>
       </div>
     </div>
   </div>
-  <script>
-    const accordionItems = document.querySelectorAll('.accordion-item h3');
-    accordionItems.forEach(item => {
-      item.addEventListener('click', () => {
-        const parent = item.parentNode;
-        parent.classList.toggle('active');
-      });
-    });
-  </script>
 </body>
 </html>
