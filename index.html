@@ -41,11 +41,13 @@
       font-weight: 700;
       color: #fff;
       margin-bottom: 10px;
+      animation: fadeIn 2s;
     }
     .hero p {
       font-size: 18px;
       color: #fff;
       margin-bottom: 20px;
+      animation: fadeIn 2s;
     }
     .hero button {
       background: #fff;
@@ -56,6 +58,7 @@
       cursor: pointer;
       border-radius: 10px;
       transition: background 0.3s ease;
+      animation: pulse 2s infinite;
     }
     .hero button:hover {
       background: #f0f0f0;
@@ -77,12 +80,13 @@
       align-items: center;
       justify-content: center;
       transition: transform 0.3s ease;
+      cursor: pointer;
     }
     .feature:hover {
       transform: scale(1.05);
     }
     .feature i {
-      font-size: 48px;
+      font-size: 24px;
       margin-bottom: 10px;
     }
     .feature h2 {
@@ -92,169 +96,84 @@
     .feature p {
       font-size: 14px;
       color: #fff;
-    }
-    .how-it-works {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin-top: 50px;
-    }
-    .step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    .step h2 {
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
-    .step p {
-      font-size: 14px;
-      color: #fff;
-    }
-    .pricing {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 50px;
-    }
-    .plan {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      padding: 20px;
-      margin: 20px;
-      width: calc(50% - 20px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.3s ease;
-    }
-    .plan:hover {
-      transform: scale(1.05);
-    }
-    .plan h2 {
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
-    .plan p {
-      font-size: 14px;
-      color: #fff;
-    }
-    .plan button {
-      background: #fff;
-      color: var(--primary-color);
-      border: none;
-      padding: 15px 30px;
-      font-size: 18px;
-      cursor: pointer;
-      border-radius: 10px;
-      transition: background 0.3s ease;
-    }
-    .plan button:hover {
-      background: #f0f0f0;
-    }
-    .footer {
-      margin-top: 50px;
-      text-align: center;
-      color: #fff;
+      opacity: 0.8;
     }
     @keyframes fadeIn {
-      from {
+      0% {
         opacity: 0;
       }
-      to {
+      100% {
         opacity: 1;
       }
     }
-    .fade-in {
-      animation: fadeIn 1s ease;
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="hero fade-in">
-      <h1>AI Study Planner</h1>
-      <p>Get a personalized study plan and achieve your academic goals</p>
-      <button>Get Started</button>
+    <div class="hero">
+      <h1>Welcome to AI Study Planner</h1>
+      <p>Get the most out of your study sessions with our AI-powered planner</p>
+      <button onclick="openModal()">Get Started</button>
     </div>
-    <div class="features fade-in">
+    <div class="features">
       <div class="feature">
-        <i>📚</i>
-        <h2>Syllabus Upload</h2>
-        <p>Upload your course syllabus and get a personalized study plan</p>
-      </div>
-      <div class="feature">
-        <i>📝</i>
-        <h2>Exam Deadline Tracking</h2>
-        <p>Get reminders and notifications for upcoming exam deadlines</p>
+        <i class="fas fa-robot"></i>
+        <h2>AI-Powered Planning</h2>
+        <p>Our AI algorithm helps you create a personalized study plan tailored to your needs</p>
       </div>
       <div class="feature">
-        <i>📊</i>
-        <h2>Study Material Organization</h2>
-        <p>Store and organize your study materials in one place</p>
+        <i class="fas fa-calendar"></i>
+        <h2>Schedule Management</h2>
+        <p>Easily manage your schedule and set reminders for upcoming study sessions</p>
+      </div>
+      <div class="feature">
+        <i class="fas fa-chart-line"></i>
+        <h2>Progress Tracking</h2>
+        <p>Track your progress and stay motivated with our interactive progress charts</p>
       </div>
     </div>
-    <div class="how-it-works fade-in">
-      <h1>How It Works</h1>
-      <div class="step">
-        <h2>Step 1: Upload Your Syllabus</h2>
-        <p>Upload your course syllabus and get a personalized study plan</p>
-      </div>
-      <div class="step">
-        <h2>Step 2: Get a Personalized Study Plan</h2>
-        <p>Get a tailored study plan based on your course material and learning style</p>
-      </div>
-      <div class="step">
-        <h2>Step 3: Track Your Progress</h2>
-        <p>Track your progress and get insights and recommendations to help you stay on track</p>
-      </div>
-    </div>
-    <div class="pricing fade-in">
-      <h1>Pricing</h1>
-      <div class="plan">
-        <h2>Free</h2>
-        <p>Get a limited study plan and track your progress</p>
-        <button>Sign Up</button>
-      </div>
-      <div class="plan">
-        <h2>Premium</h2>
-        <p>Get a personalized study plan, track your progress, and get insights and recommendations</p>
-        <button>Upgrade to Premium</button>
-      </div>
-    </div>
-    <div class="footer fade-in">
-      <p>&copy; 2024 AI Study Planner</p>
+  </div>
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Get Started with AI Study Planner</h2>
+      <p>Enter your email address to receive a free trial</p>
+      <input type="email" id="email" placeholder="Enter your email address">
+      <button onclick="sendEmail()">Send</button>
     </div>
   </div>
   <script>
-    const form = document.createElement('form');
-    form.innerHTML = `
-      <input type="email" placeholder="Enter your email" required>
-      <button>Sign Up</button>
-    `;
-    form.style.position = 'fixed';
-    form.style.top = '50%';
-    form.style.left = '50%';
-    form.style.transform = 'translate(-50%, -50%)';
-    form.style.background = '#fff';
-    form.style.padding = '20px';
-    form.style.borderRadius = '10px';
-    form.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.2)';
-    form.style.display = 'none';
-    document.body.appendChild(form);
-    document.querySelector('.hero button').addEventListener('click', () => {
-      form.style.display = 'block';
-    });
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      alert('Thank you for signing up!');
-      form.style.display = 'none';
-    });
+    function openModal() {
+      document.getElementById("modal").style.display = "block";
+    }
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+    document.getElementsByClassName("close")[0].onclick = function() {
+      closeModal();
+    }
+    window.onclick = function(event) {
+      if (event.target == document.getElementById("modal")) {
+        closeModal();
+      }
+    }
+    function sendEmail() {
+      var email = document.getElementById("email").value;
+      alert("Thank you for signing up! We will send you a free trial link to " + email);
+      closeModal();
+    }
   </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
 </body>
 </html>
