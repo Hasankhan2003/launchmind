@@ -94,49 +94,112 @@
       }
     }
     section#hero h1 {
-      font-size: 2.5rem;
+      font-size: 3rem;
       font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    section#features {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    section#features h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    section#features ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    section#features li {
+      background-color: var(--card-background);
+      border: var(--card-border);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 0.25rem;
+    }
+    section#features li:hover {
+      box-shadow: 0 0 10px var(--primary-gradient);
+    }
+    section#cta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    section#cta h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    section#cta button {
+      background-color: var(--primary-gradient);
       color: var(--text-primary);
-      animation: fadeInUp 1s;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 0.25rem;
     }
-    section#hero p {
-      font-size: 1.2rem;
-      color: var(--text-secondary);
-    }
-    @keyframes fadeInUp {
-      0% {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    section#cta button:hover {
+      box-shadow: 0 0 10px var(--primary-gradient);
     }
     footer {
-      background-color: var(--dark-background);
-      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       padding: 1rem;
-      text-align: center;
+      background-color: var(--dark-background);
+    }
+    footer p {
+      font-size: 0.8rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+    }
+    footer a {
+      text-decoration: none;
+      color: var(--text-primary);
     }
   </style>
 </head>
 <body>
   <header>
     <nav>
-      <a href="#">Link 1</a>
-      <a href="#">Link 2</a>
-      <button>Button</button>
+      <a href="#">Home</a>
+      <a href="#">Features</a>
+      <a href="#">About</a>
+      <button>Get Started</button>
     </nav>
   </header>
   <main>
     <section id="hero">
       <h1>AI Study Planner</h1>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor, vestibulum magna sed, convallis ex.</p>
+      <p>Plan your studies with AI-powered tools</p>
+    </section>
+    <section id="features">
+      <h2>Features</h2>
+      <ul>
+        <li>Personalized study plans</li>
+        <li>AI-powered learning recommendations</li>
+        <li>Real-time progress tracking</li>
+        <li>Collaboration tools for group studies</li>
+      </ul>
+    </section>
+    <section id="cta">
+      <h2>Get Started Today</h2>
+      <button>Sign Up</button>
+      <p>Already have an account? <a href="#">Log In</a></p>
     </section>
   </main>
   <footer>
-    &copy; 2023 AI Study Planner
+    <p>&copy; 2024 AI Study Planner</p>
+    <p>Follow us on <a href="#">GitHub</a> for updates and contributions</p>
   </footer>
 </body>
 </html>
