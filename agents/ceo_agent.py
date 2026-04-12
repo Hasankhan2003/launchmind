@@ -445,7 +445,12 @@ Be specific to the study planning domain. Reference students, syllabus, exams, a
         pr_url      = eng_r.get("pr_url", "https://github.com/Hasankhan2003/launchmind")
 
         try:
-            blocks = build_launch_blocks(tagline=tagline, description=description, pr_url=pr_url)
+            blocks = build_launch_blocks(
+                tagline=tagline, 
+                description=description, 
+                pr_url=pr_url,
+                posted_by="CEO"
+            )
             send_block_message(
                 text=f"🚀 AI Study Planner is LIVE! {tagline}",
                 blocks=blocks,

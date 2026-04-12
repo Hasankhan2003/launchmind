@@ -190,7 +190,7 @@ Return ONLY valid JSON (same schema as current content). No markdown fences."""
         twit    = content.get("social_posts", {}).get("twitter", "")
 
         try:
-            blocks = build_launch_blocks(tagline=tagline, description=desc, pr_url=pr_url)
+            blocks = build_launch_blocks(tagline=tagline, description=desc, pr_url=pr_url, posted_by="MARKETING")
             if twit:
                 # Insert social preview right before the footer context block
                 blocks.insert(-1, {
