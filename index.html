@@ -21,7 +21,7 @@
             background-color: var(--dark-background);
             color: var(--text-primary);
         }
-        nav {
+        header {
             position: sticky;
             top: 0;
             background-color: transparent;
@@ -31,12 +31,17 @@
             padding: 1rem;
             z-index: 1;
         }
-        nav .logo {
+        header nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header nav .logo {
             font-size: 1.5rem;
             font-weight: bold;
             margin-right: 1rem;
         }
-        nav button {
+        header nav button {
             background-color: var(--primary-gradient);
             color: var(--text-primary);
             border: none;
@@ -46,12 +51,17 @@
             font-size: 1rem;
             font-weight: bold;
         }
-        nav button:hover {
+        header nav button:hover {
             box-shadow: 0 0 10px var(--primary-gradient);
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5rem 2rem;
         }
         #hero {
             position: relative;
-            padding: 5rem 2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -81,30 +91,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-        }
-        #hero input {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        #hero button {
-            background-color: var(--primary-gradient);
-            color: var(--text-primary);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            animation: pulse 2s infinite;
-        }
-        #features {
-            padding: 2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
         }
         .feature-card {
             background-color: var(--card-background);
@@ -115,264 +101,53 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
         }
         .feature-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 0 10px var(--card-border);
-            border: var(--card-border);
-        }
-        .feature-card .icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-        #how-it-works {
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        #how-it-works ol {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        #how-it-works li {
-            margin-bottom: 1rem;
-        }
-        #how-it-works li::before {
-            content: '';
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            background-color: var(--primary-gradient);
-            border-radius: 50%;
-            margin-right: 1rem;
-        }
-        #pricing {
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .pricing-card {
-            background-color: var(--card-background);
-            border: var(--card-border);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            margin-bottom: 1rem;
-        }
-        .pricing-card.highlight {
-            background-color: var(--primary-gradient);
-            color: var(--text-primary);
-        }
-        #testimonials {
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .testimonial {
-            background-color: var(--card-background);
-            border: var(--card-border);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            margin-bottom: 1rem;
+            box-shadow: 0 0 10px var(--primary-gradient);
         }
         footer {
+            background-color: transparent;
             padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        footer p {
-            font-size: 1rem;
-            margin-bottom: 1rem;
-        }
-        footer ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-        }
-        footer li {
-            margin-right: 1rem;
-        }
-        footer li::before {
-            content: '';
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            background-color: var(--primary-gradient);
-            border-radius: 50%;
-            margin-right: 1rem;
-        }
-        @keyframes orb {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.2);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 10px var(--primary-gradient);
-            }
-            50% {
-                box-shadow: 0 0 20px var(--primary-gradient);
-            }
-            100% {
-                box-shadow: 0 0 10px var(--primary-gradient);
-            }
-        }
-        @keyframes fadeInUp {
-            0% {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            text-align: center;
+            color: var(--text-secondary);
         }
     </style>
 </head>
 <body>
     <header>
         <nav>
-            <div class="logo">AI Study Planner</div>
-            <button aria-label="Get Started Free">Get Started Free</button>
+            <span class="logo">AI Study Planner</span>
+            <button>Get Started</button>
         </nav>
     </header>
     <main>
         <section id="hero">
             <div class="orb"></div>
-            <h1 class="fadeInUp">Unlock Your Full Potential</h1>
-            <p class="fadeInUp">AI Study Planner helps you create a personalized daily study plan, tailored to your learning style and pace.</p>
+            <h1>Welcome to AI Study Planner</h1>
+            <p>Plan your studies with AI-powered tools</p>
             <form>
                 <input type="email" placeholder="Enter your email">
-                <button aria-label="Sign Up" type="submit">Sign Up</button>
+                <button>Sign up</button>
             </form>
         </section>
-        <section id="features">
+        <section>
+            <h2>Features</h2>
             <div class="feature-card">
-                <div class="icon">📚</div>
-                <h2>Syllabus Parser</h2>
-                <p>Automatically extracts key dates, assignments, and topics from uploaded syllabi.</p>
-            </div>
-            <div class="feature-card">
-                <div class="icon">🤖</div>
-                <h2>AI-Driven Scheduling</h2>
-                <p>Utilizes machine learning algorithms to generate daily study schedules that adapt to your learning pace and goals.</p>
+                <h3>AI-powered planning</h3>
+                <p>Get personalized study plans with AI</p>
             </div>
             <div class="feature-card">
-                <div class="icon">📊</div>
-                <h2>Learning Style Assessment</h2>
-                <p>Provides a comprehensive assessment of your learning style, including preferences for visual, auditory, or kinesthetic learning.</p>
+                <h3>Study tracking</h3>
+                <p>Track your progress and stay motivated</p>
             </div>
             <div class="feature-card">
-                <div class="icon">📚</div>
-                <h2>Smart Recommendations</h2>
-                <p>Offers suggestions for study resources, such as textbooks, online courses, or study groups, based on your course material and learning style.</p>
-            </div>
-            <div class="feature-card">
-                <div class="icon">📈</div>
-                <h2>Progress Tracking</h2>
-                <p>Allows you to monitor your study progress, set reminders, and receive notifications about upcoming deadlines.</p>
-            </div>
-        </section>
-        <section id="how-it-works">
-            <h2>How it Works</h2>
-            <ol>
-                <li>Upload your syllabus and let our AI parser extract key dates, assignments, and topics.</li>
-                <li>Our AI-driven scheduling algorithm generates a personalized daily study plan, tailored to your learning pace and goals.</li>
-                <li>Study with confidence, using our smart recommendations and progress tracking features to stay on track and motivated.</li>
-            </ol>
-        </section>
-        <section id="pricing">
-            <h2>Pricing</h2>
-            <div class="pricing-card">
-                <h3>Free</h3>
-                <p>Limited features, perfect for trying out our platform.</p>
-            </div>
-            <div class="pricing-card highlight">
-                <h3>Premium</h3>
-                <p>$9.99/month or $99.99/year, with full access to all features, including advanced AI-driven scheduling and personalized learning style assessments.</p>
-            </div>
-        </section>
-        <section id="testimonials">
-            <h2>What Our Users Say</h2>
-            <div class="testimonial">
-                <p>"AI Study Planner has been a game-changer for me. I can finally balance my assignments and study schedule with ease." - Emily, Second-Year Engineering Student</p>
-            </div>
-            <div class="testimonial">
-                <p>"I was struggling to allocate dedicated study time amidst my busy work schedule, but AI Study Planner has helped me stay on track and focused." - David, Part-Time Working Student</p>
-            </div>
-            <div class="testimonial">
-                <p>"I was overwhelmed by the vast amount of reading material, but AI Study Planner's smart recommendations and progress tracking features have made it manageable for me." - Sarah, First-Year Humanities Student</p>
+                <h3>Resource library</h3>
+                <p>Access a library of study resources and materials</p>
             </div>
         </section>
     </main>
     <footer>
         <p>&copy; 2023 AI Study Planner</p>
-        <p>Empowering students to reach their full potential</p>
-        <ul>
-            <li><a href="#" aria-label="Facebook">👥</a></li>
-            <li><a href="#" aria-label="Twitter">🐦</a></li>
-            <li><a href="#" aria-label="Instagram">📸</a></li>
-        </ul>
     </footer>
-    <script>
-        const navbar = document.querySelector('nav');
-        const scrollPosition = window.scrollY;
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 100) {
-                navbar.style.background = 'var(--dark-background)';
-                navbar.style.backdropFilter = 'blur(10px)';
-            } else {
-                navbar.style.background = 'transparent';
-                navbar.style.backdropFilter = 'none';
-            }
-        });
-        const emailForm = document.querySelector('#hero form');
-        emailForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('🎉 You\'re on the list! We\'ll be in touch soon.');
-        });
-        const navLinks = document.querySelectorAll('nav a');
-        navLinks.forEach((link) => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const sectionId = link.getAttribute('href').split('#')[1];
-                const section = document.querySelector(`#${sectionId}`);
-                section.scrollIntoView({ behavior: 'smooth' });
-            });
-        });
-    </script>
 </body>
 </html>
