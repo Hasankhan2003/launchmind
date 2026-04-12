@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Study Planner</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
     :root {
       --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
       --dark-background: #0f0f1a;
@@ -25,7 +25,7 @@
       color: var(--text-primary);
       line-height: 1.6;
     }
-    header {
+    nav {
       position: sticky;
       top: 0;
       background-color: transparent;
@@ -33,56 +33,47 @@
       justify-content: space-between;
       align-items: center;
       padding: 1rem;
-      z-index: 1;
+      backdrop-filter: blur(0px);
+      transition: backdrop-filter 0.3s ease;
     }
-    header nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    nav.scrolled {
+      backdrop-filter: blur(10px);
+      background-color: var(--dark-background);
     }
-    header nav .logo {
-      font-weight: 600;
-      font-size: 1.2rem;
+    nav a {
+      text-decoration: none;
+      color: var(--text-primary);
     }
-    header nav .get-started {
-      background: var(--primary-gradient);
+    nav button {
+      background-color: var(--primary-gradient);
       color: var(--text-primary);
       border: none;
       padding: 0.5rem 1rem;
       font-size: 1rem;
       cursor: pointer;
-      border-radius: 0.5rem;
-      transition: transform 0.2s ease;
+      border-radius: 0.25rem;
     }
-    header nav .get-started:hover {
-      transform: scale(1.05);
+    nav button:hover {
+      box-shadow: 0 0 10px var(--primary-gradient);
     }
-    header nav .get-started:active {
-      transform: scale(0.95);
-    }
-    main {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-    }
-    section#hero {
+    #hero {
       position: relative;
-      padding: 4rem 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      height: 100vh;
+      background-image: linear-gradient(135deg, #6366f1, #8b5cf6);
     }
-    #hero .orb {
+    #hero::before {
+      content: '';
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: var(--primary-gradient);
-      opacity: 0.5;
-      border-radius: 50%;
+      background-image: radial-gradient(50% 50% at 50% 50%, #ffffff 0%, #ffffff 100%);
+      opacity: 0.1;
       animation: orb 10s infinite;
     }
     @keyframes orb {
@@ -96,106 +87,306 @@
         transform: scale(1);
       }
     }
-    #hero .headline {
+    #hero h1 {
       font-size: 2.5rem;
       font-weight: 700;
-      margin-bottom: 1rem;
+      color: var(--text-primary);
+      animation: fadeInUp 1s;
     }
-    #hero .sub-headline {
-      font-size: 1.5rem;
-      margin-bottom: 2rem;
+    #hero p {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      animation: fadeInUp 1s;
+      animation-delay: 0.5s;
     }
-    section#features {
-      padding: 4rem 2rem;
+    #hero form {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
     }
-    #features .feature {
-      background-color: var(--card-background);
-      border: var(--card-border);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      border-radius: 1rem;
-      width: 80%;
-    }
-    #features .feature h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-    }
-    #features .feature p {
+    #hero input {
+      padding: 0.5rem;
       font-size: 1rem;
-      margin-bottom: 2rem;
+      border: none;
+      border-radius: 0.25rem;
+      width: 100%;
+      max-width: 300px;
     }
-    section#call-to-action {
-      padding: 2rem;
-      display: flex;
-      justify-content: center;
-    }
-    #call-to-action .cta-button {
-      background: var(--primary-gradient);
+    #hero button {
+      background-color: var(--primary-gradient);
       color: var(--text-primary);
       border: none;
-      padding: 1rem 2rem;
-      font-size: 1.2rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
       cursor: pointer;
-      border-radius: 0.5rem;
-      transition: transform 0.2s ease;
+      border-radius: 0.25rem;
+      animation: pulse 2s infinite;
     }
-    #call-to-action .cta-button:hover {
-      transform: scale(1.05);
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 10px var(--primary-gradient);
+      }
+      50% {
+        box-shadow: 0 0 20px var(--primary-gradient);
+      }
+      100% {
+        box-shadow: 0 0 10px var(--primary-gradient);
+      }
     }
-    #call-to-action .cta-button:active {
-      transform: scale(0.95);
+    #features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding: 2rem;
+    }
+    .feature-card {
+      background-color: var(--card-background);
+      border: var(--card-border);
+      padding: 1rem;
+      border-radius: 0.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--primary-gradient);
+    }
+    .feature-card:hover .icon {
+      border: 1px solid var(--primary-gradient);
+    }
+    .icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--text-secondary);
+      padding: 0.5rem;
+      border-radius: 0.25rem;
+      transition: border 0.3s ease;
+    }
+    #how-it-works {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    #how-it-works ol {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    #how-it-works li {
+      margin-bottom: 1rem;
+    }
+    #how-it-works li::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background-color: var(--primary-gradient);
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+    #pricing {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .pricing-card {
+      background-color: var(--card-background);
+      border: var(--card-border);
+      padding: 1rem;
+      border-radius: 0.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .pricing-card.highlight {
+      background-color: var(--primary-gradient);
+      color: var(--text-primary);
+    }
+    #testimonials {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .testimonial {
+      background-color: var(--card-background);
+      border: var(--card-border);
+      padding: 1rem;
+      border-radius: 0.25rem;
+      margin-bottom: 1rem;
     }
     footer {
-      background-color: var(--dark-background);
-      padding: 2rem;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background-color: var(--dark-background);
     }
     footer p {
       font-size: 0.8rem;
       color: var(--text-secondary);
     }
+    footer ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    footer li {
+      margin-right: 1rem;
+    }
+    footer a {
+      text-decoration: none;
+      color: var(--text-secondary);
+    }
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body>
   <header>
-    <nav>
-      <span class="logo">AI Study Planner</span>
-      <button class="get-started">Get Started</button>
+    <nav id="navbar">
+      <a href="#hero">AI Study Planner</a>
+      <button aria-label="Get Started Free">Get Started Free</button>
     </nav>
   </header>
   <main>
     <section id="hero">
-      <div class="orb"></div>
-      <h1 class="headline">AI Study Planner</h1>
-      <p class="sub-headline">Plan your studies with AI-powered tools</p>
+      <h1>AI Study Planner</h1>
+      <p>Get a personalized daily study plan using AI-driven scheduling and smart recommendations</p>
+      <form>
+        <input type="email" placeholder="Enter your email">
+        <button aria-label="Sign up">Sign up</button>
+      </form>
     </section>
     <section id="features">
-      <div class="feature">
-        <h2>Personalized Study Plans</h2>
-        <p>Get customized study plans based on your goals and schedule</p>
+      <div class="feature-card">
+        <div class="icon">📚</div>
+        <h2>Syllabus Upload and Parsing</h2>
+        <p>Upload your syllabus and automatically parse key dates, assignments, and deadlines</p>
       </div>
-      <div class="feature">
-        <h2>AI-powered Learning Analytics</h2>
-        <p>Track your progress and identify areas for improvement with our AI-powered analytics</p>
+      <div class="feature-card">
+        <div class="icon">🤖</div>
+        <h2>AI-Driven Study Schedule</h2>
+        <p>Get an optimized daily study schedule using machine learning algorithms</p>
       </div>
-      <div class="feature">
-        <h2>Community Support</h2>
-        <p>Join our community of students and get support from peers and mentors</p>
+      <div class="feature-card">
+        <div class="icon">📊</div>
+        <h2>Smart Recommendations</h2>
+        <p>Get tailored recommendations for study materials, resources, and techniques</p>
       </div>
     </section>
-    <section id="call-to-action">
-      <button class="cta-button">Sign Up Now</button>
+    <section id="how-it-works">
+      <h2>How it works</h2>
+      <ol>
+        <li>Upload your syllabus and automatically parse key dates, assignments, and deadlines</li>
+        <li>Our AI-driven algorithm creates a personalized daily study schedule</li>
+        <li>Study with confidence and get smart recommendations for improvement</li>
+      </ol>
+    </section>
+    <section id="pricing">
+      <h2>Pricing</h2>
+      <div class="pricing-card">
+        <h3>Free</h3>
+        <p>Limited features</p>
+      </div>
+      <div class="pricing-card highlight">
+        <h3>Premium</h3>
+        <p>$9.99/month</p>
+      </div>
+    </section>
+    <section id="testimonials">
+      <h2>What our users say</h2>
+      <div class="testimonial">
+        <p>AI Study Planner has been a game-changer for me. I can finally manage my time effectively and focus on my studies.</p>
+        <p>— Emily, Second-Year Engineering Student</p>
+      </div>
+      <div class="testimonial">
+        <p>I was struggling to balance my work and study schedule, but AI Study Planner has helped me prioritize my tasks and stay on track.</p>
+        <p>— David, Part-Time Working Student</p>
+      </div>
+      <div class="testimonial">
+        <p>AI Study Planner has helped me stay organized and focused. I can now manage my time more effectively and achieve my academic goals.</p>
+        <p>— Sarah, First-Year Arts Student</p>
+      </div>
     </section>
   </main>
   <footer>
-    <p>&copy; 2024 AI Study Planner. All rights reserved.</p>
+    <p>&copy; 2023 AI Study Planner</p>
+    <p>Empowering students to achieve their academic goals</p>
+    <ul>
+      <li><a href="#">📚 Twitter</a></li>
+      <li><a href="#">📊 Instagram</a></li>
+      <li><a href="#">📈 Facebook</a></li>
+    </ul>
   </footer>
+  <script>
+    const navbar = document.getElementById('navbar');
+    const hero = document.getElementById('hero');
+    const features = document.getElementById('features');
+    const howItWorks = document.getElementById('how-it-works');
+    const pricing = document.getElementById('pricing');
+    const testimonials = document.getElementById('testimonials');
+    const footer = document.getElementById('footer');
+    const signupForm = document.querySelector('#hero form');
+    const signupButton = document.querySelector('#hero button');
+    const navbarLinks = document.querySelectorAll('nav a');
+    const pricingCards = document.querySelectorAll('.pricing-card');
+    const featureCards = document.querySelectorAll('.feature-card');
+    const testimonialCards = document.querySelectorAll('.testimonial');
+    let scrolled = false;
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 100) {
+        navbar.classList.add('scrolled');
+        scrolled = true;
+      } else {
+        navbar.classList.remove('scrolled');
+        scrolled = false;
+      }
+    });
+    navbarLinks.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = link.getAttribute('href');
+        const targetElement = document.querySelector(target);
+        targetElement.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('🎉 You\'re on the list! We\'ll be in touch soon.');
+    });
+    featureCards.forEach((card) => {
+      card.addEventListener('mouseover', () => {
+        card.style.border = '1px solid #6366f1';
+      });
+      card.addEventListener('mouseout', () => {
+        card.style.border = '1px solid #94a3b8';
+      });
+    });
+  </script>
 </body>
 </html>
