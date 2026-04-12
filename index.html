@@ -25,7 +25,7 @@
             color: var(--text-primary);
             line-height: 1.6;
         }
-        nav {
+        header {
             position: sticky;
             top: 0;
             background-color: transparent;
@@ -35,16 +35,16 @@
             padding: 1rem;
             z-index: 1;
         }
-        nav.sticky {
+        header.sticky {
             background-color: var(--dark-background);
             backdrop-filter: blur(10px);
             transition: backdrop-filter 0.2s ease;
         }
-        nav a {
+        header a {
             text-decoration: none;
             color: var(--text-primary);
         }
-        nav button {
+        header button {
             background: var(--primary-gradient);
             color: var(--text-primary);
             border: none;
@@ -52,10 +52,16 @@
             border-radius: 0.25rem;
             cursor: pointer;
         }
-        nav button:hover {
+        header button:hover {
             box-shadow: 0 0 10px rgba(0,0,0,0.2);
         }
-        #hero {
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+        section#hero {
             position: relative;
             padding: 4rem 2rem;
             display: flex;
@@ -63,7 +69,7 @@
             align-items: center;
             justify-content: center;
         }
-        #hero::before {
+        section#hero::before {
             content: '';
             position: absolute;
             top: 0;
@@ -86,80 +92,113 @@
                 transform: scale(1);
             }
         }
-        .features {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 2rem;
-            padding: 4rem 2rem;
-        }
-        .feature {
-            background-color: var(--card-background);
-            border: var(--card-border);
-            padding: 2rem;
-            border-radius: 0.5rem;
-            width: calc(33.33% - 1rem);
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .feature h2 {
+        section#hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
             margin-bottom: 1rem;
         }
-        .cta {
-            background-color: var(--primary-gradient);
+        section#hero p {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+        section#features {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+        section#features h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        section#features ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        section#features li {
+            margin-bottom: 1rem;
+        }
+        section#features li::before {
+            content: '\2713';
+            margin-right: 0.5rem;
+            color: var(--primary-gradient);
+        }
+        section#features li span {
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+        section#call-to-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+        section#call-to-action h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        section#call-to-action button {
+            background: var(--primary-gradient);
             color: var(--text-primary);
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
             cursor: pointer;
-            font-size: 1.2rem;
-            font-weight: bold;
         }
-        .cta:hover {
+        section#call-to-action button:hover {
             box-shadow: 0 0 10px rgba(0,0,0,0.2);
         }
         footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
             background-color: var(--dark-background);
-            padding: 2rem;
-            text-align: center;
-            color: var(--text-secondary);
         }
-        footer a {
-            text-decoration: none;
-            color: var(--text-primary);
+        footer p {
+            font-size: 0.9rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
         }
     </style>
 </head>
-<header>
-    <nav>
-        <a href="#">Home</a>
-        <button>Get Started</button>
-    </nav>
-</header>
-<main>
-    <section id="hero">
-        <h1>AI Study Planner</h1>
-        <p>Plan your studies with AI-powered tools</p>
-    </section>
-    <section class="features">
-        <div class="feature">
-            <h2>Personalized Learning</h2>
-            <p>Get personalized learning recommendations based on your strengths and weaknesses</p>
-        </div>
-        <div class="feature">
-            <h2>AI-powered Study Plans</h2>
-            <p>Create customized study plans with the help of AI</p>
-        </div>
-        <div class="feature">
-            <h2>Real-time Progress Tracking</h2>
-            <p>Track your progress in real-time and stay motivated</p>
-        </div>
-    </section>
-    <section>
-        <button class="cta">Get Started</button>
-    </section>
-</main>
-<footer>
-    <p>&copy; 2023 AI Study Planner</p>
-    <p><a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a></p>
-</footer>
+<body>
+    <header>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Features</a>
+            <a href="#">Pricing</a>
+            <button>Get Started</button>
+        </nav>
+    </header>
+    <main>
+        <section id="hero">
+            <h1>AI Study Planner: Your Personalized Learning Companion</h1>
+            <p>Unlock your full potential with our AI-powered study planner, designed to help you achieve your academic goals.</p>
+            <button>Discover How</button>
+        </section>
+        <section id="features">
+            <h2>Key Features</h2>
+            <ul>
+                <li><span>Syllabus Import</span>: Easily import your course syllabus and let our AI planner create a personalized study schedule for you.</li>
+                <li><span>Progress Tracking</span>: Monitor your progress and stay on track with our intuitive dashboard and regular progress updates.</li>
+                <li><span>AI-Powered Recommendations</span>: Get personalized recommendations for study materials, practice exams, and other resources tailored to your learning style.</li>
+                <li><span>Collaboration Tools</span>: Invite friends and classmates to join your study group and collaborate on projects and assignments.</li>
+                <li><span>Mobile Accessibility</span>: Access your study planner on-the-go with our mobile-friendly interface and stay organized wherever you are.</li>
+            </ul>
+        </section>
+        <section id="call-to-action">
+            <h2>Get Started Today</h2>
+            <button>Sign Up for Free</button>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 AI Study Planner. All rights reserved.</p>
+        <p>Terms of Service | Privacy Policy</p>
+    </footer>
+</body>
 </html>
