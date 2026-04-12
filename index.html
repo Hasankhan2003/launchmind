@@ -79,35 +79,66 @@
             animation: orb 10s infinite;
         }
         #hero h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: bold;
             margin-bottom: 1rem;
         }
-        #hero p {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
+        @keyframes orb {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
-        #hero form {
+        .features {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 5rem;
         }
         .feature-card {
             background-color: var(--card-background);
             border: var(--card-border);
-            padding: 1rem;
-            border-radius: 0.5rem;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: calc(33.33% - 1rem);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .feature-card h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        .feature-card p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+        .cta {
+            margin-top: 5rem;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
         }
-        .feature-card:hover {
+        .cta button {
+            background-color: var(--primary-gradient);
+            color: var(--text-primary);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .cta button:hover {
             box-shadow: 0 0 10px var(--primary-gradient);
         }
         footer {
-            background-color: transparent;
-            padding: 1rem;
+            background-color: var(--dark-background);
+            padding: 2rem;
             text-align: center;
             color: var(--text-secondary);
         }
@@ -123,31 +154,29 @@
     <main>
         <section id="hero">
             <div class="orb"></div>
-            <h1>Welcome to AI Study Planner</h1>
+            <h1>AI Study Planner</h1>
             <p>Plan your studies with AI-powered tools</p>
-            <form>
-                <input type="email" placeholder="Enter your email">
-                <button>Sign up</button>
-            </form>
         </section>
-        <section>
-            <h2>Features</h2>
+        <section class="features">
             <div class="feature-card">
-                <h3>AI-powered planning</h3>
-                <p>Get personalized study plans with AI</p>
+                <h2>Personalized Study Plans</h2>
+                <p>Get customized study plans based on your goals and schedule</p>
             </div>
             <div class="feature-card">
-                <h3>Study tracking</h3>
-                <p>Track your progress and stay motivated</p>
+                <h2>AI-Powered Learning Tools</h2>
+                <p>Access a range of AI-powered learning tools to help you study more effectively</p>
             </div>
             <div class="feature-card">
-                <h3>Resource library</h3>
-                <p>Access a library of study resources and materials</p>
+                <h2>Progress Tracking</h2>
+                <p>Track your progress and stay motivated with our progress tracking features</p>
             </div>
+        </section>
+        <section class="cta">
+            <button>Sign Up Now</button>
         </section>
     </main>
     <footer>
-        <p>&copy; 2023 AI Study Planner</p>
+        <p>&copy; 2024 AI Study Planner. All rights reserved.</p>
     </footer>
 </body>
 </html>
