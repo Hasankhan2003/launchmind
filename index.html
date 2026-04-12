@@ -1,13 +1,339 @@
-{
-  "tagline": "Study Smart. Stress Less. Ace Every Exam.",
-  "description": "AI Study Planner is an intelligent scheduling tool that converts your university syllabus and exam deadlines into a personalized daily study plan — eliminating guesswork and reducing academic stress.",
-  "cold_email": {
-    "subject": "🎓 Never Cram Again — AI Study Planner Is Here",
-    "body": "Hi there,\n\nExam season is brutal. Between multiple courses, shifting deadlines, and the pressure to perform, most students spend more time worrying than actually studying.\n\nThat's exactly why we built AI Study Planner.\n\nYou upload your syllabus, set your exam dates, and our AI generates a realistic, balanced daily study plan — tailored to your pace and priorities.\n\nNo more all-nighters. No more last-minute panic. Just a clear path from today to exam day.\n\nWe're inviting a limited group of students to try it free. Reply to this email or click the link below to get started.\n\nBest,\nThe AI Study Planner Team"
-  },
-  "social_posts": {
-    "twitter": "📚 Exam stress? AI Study Planner turns your syllabus into a smart daily schedule. Study smarter, not harder. Try it free 👇 #StudyTips #AI #StudentLife",
-    "linkedin": "University students face a hidden crisis: not lack of effort, but lack of direction.\n\nAI Study Planner solves this by converting your syllabus and exam deadlines into a personalized, day-by-day study roadmap.\n\nThe result? Less stress, better retention, and more confidence walking into every exam.\n\nWould you have benefited from a tool like this during your studies?",
-    "instagram": "✨ No more Sunday-night dread! 📚\n\nAI Study Planner creates your perfect study schedule — automatically. Just add your syllabus + exam dates and let AI do the rest. 🧠⚡\n\n#StudySmart #AIStudyPlanner #UniversityLife #ExamPrep #StudentHacks #StudyMotivation #AcademicSuccess"
-  }
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Study Planner</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    :root {
+      --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+      --dark-background: #0f0f1a;
+      --card-background: rgba(255,255,255,0.05);
+      --card-border: 1px solid rgba(255,255,255,0.1);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--dark-background);
+      color: var(--text-primary);
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      background-color: var(--dark-background);
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(0px);
+      transition: backdrop-filter 0.3s ease;
+    }
+    nav.scrolled {
+      backdrop-filter: blur(10px);
+    }
+    nav a {
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+    nav button {
+      background-color: var(--primary-gradient);
+      color: var(--text-primary);
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 0.25rem;
+      cursor: pointer;
+    }
+    #hero {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    #hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--primary-gradient);
+      opacity: 0.5;
+      border-radius: 50%;
+      animation: orb 10s infinite;
+    }
+    @keyframes orb {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    #hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    #hero p {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    #hero form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #hero input {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 0.25rem;
+      margin-bottom: 1rem;
+    }
+    #hero button {
+      background-color: var(--primary-gradient);
+      color: var(--text-primary);
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 0.25rem;
+      cursor: pointer;
+    }
+    #features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding: 2rem;
+    }
+    .feature-card {
+      background-color: var(--card-background);
+      border: var(--card-border);
+      padding: 1rem;
+      border-radius: 0.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .feature-card:hover::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      opacity: 0.5;
+      border-radius: 0.25rem;
+    }
+    #how-it-works {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #how-it-works ol {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    #how-it-works li {
+      margin-bottom: 1rem;
+    }
+    #how-it-works li::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background-color: var(--primary-gradient);
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+    #pricing {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .pricing-card {
+      background-color: var(--card-background);
+      border: var(--card-border);
+      padding: 1rem;
+      border-radius: 0.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .pricing-card.highlight {
+      background-color: var(--primary-gradient);
+      color: var(--text-primary);
+    }
+    #testimonials {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .testimonial {
+      background-color: var(--card-background);
+      border: var(--card-border);
+      padding: 1rem;
+      border-radius: 0.25rem;
+      margin-bottom: 1rem;
+    }
+    footer {
+      padding: 1rem;
+      background-color: var(--dark-background);
+      text-align: center;
+      color: var(--text-secondary);
+    }
+    footer a {
+      text-decoration: none;
+      color: var(--text-secondary);
+    }
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(103, 58, 183, 0.5);
+      }
+      100% {
+        box-shadow: 0 0 0 10px rgba(103, 58, 183, 0);
+      }
+    }
+    .fadeInUp {
+      animation: fadeInUp 1s;
+    }
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav id="navbar">
+      <a href="#" aria-label="Logo">AI Study Planner</a>
+      <button aria-label="Get Started Free">Get Started Free</button>
+    </nav>
+  </header>
+  <main>
+    <section id="hero" class="fadeInUp">
+      <h1>Unlock Your Academic Potential</h1>
+      <p>Get personalized study plans and achieve your goals with AI Study Planner</p>
+      <form>
+        <input type="email" placeholder="Enter your email">
+        <button aria-label="Sign up" class="pulse">Sign up</button>
+      </form>
+    </section>
+    <section id="features">
+      <article class="feature-card">
+        <h2>📚 Syllabus Upload and Analysis</h2>
+        <p>Upload your syllabus and get a personalized study plan</p>
+      </article>
+      <article class="feature-card">
+        <h2>🕒 AI-Driven Scheduling</h2>
+        <p>Get a daily study schedule tailored to your learning style and goals</p>
+      </article>
+      <article class="feature-card">
+        <h2>📊 Smart Recommendations</h2>
+        <p>Get personalized recommendations for study materials and resources</p>
+      </article>
+      <article class="feature-card">
+        <h2>📈 Progress Tracking and Analytics</h2>
+        <p>Track your progress and get data-driven insights to optimize your study plan</p>
+      </article>
+      <article class="feature-card">
+        <h2>📅 Integration with Calendar and Task Management Tools</h2>
+        <p>Integrate your study plan with your calendar and task management tools</p>
+      </article>
+    </section>
+    <section id="how-it-works">
+      <h2>How it Works</h2>
+      <ol>
+        <li>Upload your syllabus and get analyzed by our AI algorithm</li>
+        <li>Get a personalized daily study schedule tailored to your learning style and goals</li>
+        <li>Study with confidence and achieve your academic goals</li>
+      </ol>
+    </section>
+    <section id="pricing">
+      <h2>Pricing</h2>
+      <article class="pricing-card">
+        <h3>Free</h3>
+        <p>Basic features and limited support</p>
+      </article>
+      <article class="pricing-card highlight">
+        <h3>Premium</h3>
+        <p>Advanced features, priority support, and personalized coaching</p>
+        <p>$9.99/month or $99.99/year</p>
+      </article>
+    </section>
+    <section id="testimonials">
+      <h2>What Our Users Say</h2>
+      <article class="testimonial">
+        <p>"AI Study Planner has been a game-changer for me. I can finally manage my time effectively and focus on my studies." - Emily</p>
+      </article>
+      <article class="testimonial">
+        <p>"I was struggling to balance my research schedule and coursework, but AI Study Planner has helped me stay on track and achieve my goals." - David</p>
+      </article>
+      <article class="testimonial">
+        <p>"As a part-time working student, I need to be efficient with my time. AI Study Planner has been a lifesaver, helping me prioritize my tasks and stay organized." - Sarah</p>
+      </article>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2023 AI Study Planner</p>
+    <p>Unlock Your Academic Potential 🚀</p>
+    <p>Follow us on social media: <a href="#" aria-label="Twitter">🐦</a> <a href="#" aria-label="Facebook">👥</a> <a href="#" aria-label="Instagram">📸</a></p>
+  </footer>
+  <script>
+    const navbar = document.getElementById('navbar');
+    const scrollPosition = window.scrollY;
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 100) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+    const signupForm = document.querySelector('#hero form');
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('🎉 You\'re on the list! We\'ll be in touch soon.');
+    });
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const sectionId = link.getAttribute('href');
+        const section = document.querySelector(sectionId);
+        section.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  </script>
+</body>
+</html>
