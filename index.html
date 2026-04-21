@@ -24,7 +24,7 @@
       background-color: var(--dark-background);
       color: var(--text-primary);
     }
-    nav {
+    header {
       position: sticky;
       top: 0;
       background-color: transparent;
@@ -35,11 +35,16 @@
       align-items: center;
       padding: 1rem;
     }
-    nav .logo {
+    header nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header nav .logo {
       font-weight: 600;
       font-size: 1.5rem;
     }
-    nav .get-started {
+    header nav .get-started {
       background: var(--primary-gradient);
       color: var(--text-primary);
       border: none;
@@ -49,8 +54,14 @@
       border-radius: 0.25rem;
       cursor: pointer;
     }
-    nav .get-started:hover {
+    header nav .get-started:hover {
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
     }
     #hero {
       height: 100vh;
@@ -95,107 +106,20 @@
     #hero .email-signup button:hover {
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
-    #features {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-      padding: 2rem;
-    }
-    .feature-card {
-      background: var(--card-background);
-      border: var(--card-border);
-      padding: 1rem;
-      border-radius: 0.25rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .feature-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    }
-    .feature-card .icon {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-    #how-it-works {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-    }
-    #how-it-works .step {
-      font-size: 1.5rem;
-      font-weight: 500;
-      margin-bottom: 1rem;
-    }
-    #pricing {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-    }
     .pricing-card {
       background: var(--card-background);
       border: var(--card-border);
       padding: 1rem;
       border-radius: 0.25rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       margin: 1rem;
-    }
-    .pricing-card.highlight {
-      background: var(--primary-gradient);
-      color: var(--text-primary);
-    }
-    #testimonials {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-    }
-    .testimonial {
-      font-size: 1.5rem;
-      font-weight: 500;
-      margin-bottom: 1rem;
+      width: calc(33.33% - 2rem);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
     footer {
-      background: var(--dark-background);
+      background-color: transparent;
       padding: 1rem;
       text-align: center;
-    }
-    footer .copyright {
-      font-size: 1rem;
-      font-weight: 400;
-    }
-    footer .social-links {
-      font-size: 1.5rem;
-      margin-top: 1rem;
-    }
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    @keyframes pulseGlow {
-      from {
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-      }
-      to {
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-      }
-    }
-    .fadeInUp {
-      animation: fadeInUp 0.5s ease;
-    }
-    .pulse-glow {
-      animation: pulseGlow 2s infinite;
+      color: var(--text-secondary);
     }
   </style>
 </head>
@@ -203,148 +127,38 @@
   <header>
     <nav>
       <span class="logo">AI Study Planner</span>
-      <button class="get-started" aria-label="Get started for free">Get Started Free</button>
+      <button class="get-started">Get Started</button>
     </nav>
   </header>
   <main>
     <section id="hero">
-      <h1 class="headline fadeInUp">Unlock Your Academic Potential</h1>
-      <p class="sub-headline fadeInUp">The AI Study Planner helps university students overcome the challenge of ineffective time management by converting their syllabus and exam deadlines into a personalized daily study plan using AI-driven scheduling and smart recommendations.</p>
+      <h1 class="headline">AI Study Planner</h1>
+      <p class="sub-headline">Plan your studies with AI</p>
       <div class="email-signup">
-        <input type="email" placeholder="Enter your email address">
-        <button class="pulse-glow" aria-label="Sign up for updates">Sign Up</button>
+        <input type="email" placeholder="Enter your email">
+        <button>Sign up</button>
       </div>
     </section>
-    <section id="features">
-      <article class="feature-card">
-        <span class="icon">📚</span>
-        <h2>Syllabus Upload and Parsing</h2>
-        <p>Upload your syllabus and have it automatically parsed to extract key deadlines and assignment information.</p>
-      </article>
-      <article class="feature-card">
-        <span class="icon">🤖</span>
-        <h2>AI-Driven Study Schedule Generation</h2>
-        <p>Our AI-powered algorithm generates a personalized daily study schedule based on your syllabus, learning style, and pace.</p>
-      </article>
-      <article class="feature-card">
-        <span class="icon">📊</span>
-        <h2>Smart Recommendation Engine</h2>
-        <p>Get tailored recommendations for study materials, practice problems, and other resources based on your strengths, weaknesses, and learning goals.</p>
-      </article>
-      <article class="feature-card">
-        <span class="icon">🕒</span>
-        <h2>Time Blocking and Scheduling</h2>
-        <p>Block dedicated time slots for studying and prioritize your tasks to avoid procrastination.</p>
-      </article>
-      <article class="feature-card">
-        <span class="icon">📈</span>
-        <h2>Progress Tracking and Analytics</h2>
-        <p>Track your progress, identify areas where you need improvement, and adjust your study plan accordingly.</p>
-      </article>
-    </section>
-    <section id="how-it-works">
-      <h1>How it Works</h1>
-      <ol>
-        <li class="step">Upload your syllabus and let our AI-powered algorithm parse it to extract key deadlines and assignment information.</li>
-        <li class="step">Our AI-driven scheduling system generates a personalized daily study schedule based on your syllabus, learning style, and pace.</li>
-        <li class="step">Study with confidence, knowing that you have a tailored plan to help you achieve your academic goals.</li>
-      </ol>
-    </section>
-    <section id="pricing">
-      <h1>Pricing</h1>
-      <div class="pricing-card">
-        <h2>Free</h2>
-        <ul>
-          <li>Limited features</li>
-          <li>No personalized coaching</li>
-        </ul>
+    <section class="pricing">
+      <h2>Pricing</h2>
+      <div class="pricing-cards">
+        <div class="pricing-card">
+          <h3>Basic</h3>
+          <p>$9.99/month</p>
+        </div>
+        <div class="pricing-card">
+          <h3>Premium</h3>
+          <p>$19.99/month</p>
+        </div>
+        <div class="pricing-card">
+          <h3>Pro</h3>
+          <p>$29.99/month</p>
+        </div>
       </div>
-      <div class="pricing-card highlight">
-        <h2>Premium ($9.99/month)</h2>
-        <ul>
-          <li>Advanced features</li>
-          <li>Personalized coaching</li>
-          <li>Prioritized support</li>
-        </ul>
-      </div>
-      <div class="pricing-card">
-        <h2>Pro ($19.99/month)</h2>
-        <ul>
-          <li>All features</li>
-          <li>Dedicated study planner</li>
-          <li>Regular progress reviews</li>
-        </ul>
-      </div>
-    </section>
-    <section id="testimonials">
-      <h1>What Our Users Say</h1>
-      <p class="testimonial">"The AI Study Planner has been a game-changer for me. I can finally manage my time effectively and focus on my studies." - Emily</p>
-      <p class="testimonial">"I was struggling to balance my part-time job and studies, but the AI Study Planner has helped me prioritize my tasks and stay on track." - David</p>
-      <p class="testimonial">"I was overwhelmed by my coursework, but the AI Study Planner has provided me with a clear plan and recommendations to help me succeed." - Sophia</p>
     </section>
   </main>
   <footer>
-    <p class="copyright">Copyright 2023 AI Study Planner. All rights reserved.</p>
-    <p class="tagline">Empowering students to achieve academic success</p>
-    <p class="social-links">
-      <a href="#" aria-label="Facebook">👥</a>
-      <a href="#" aria-label="Twitter">🐦</a>
-      <a href="#" aria-label="Instagram">📸</a>
-    </p>
+    <p>&copy; 2024 AI Study Planner</p>
   </footer>
-  <script>
-    const navbar = document.querySelector('nav');
-    const getStartedButton = document.querySelector('.get-started');
-    const emailSignupForm = document.querySelector('.email-signup');
-    const emailSignupInput = document.querySelector('.email-signup input');
-    const emailSignupButton = document.querySelector('.email-signup button');
-    const featureCards = document.querySelectorAll('.feature-card');
-    const pricingCards = document.querySelectorAll('.pricing-card');
-    const testimonials = document.querySelectorAll('.testimonial');
-    let scrolled = false;
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 0 && !scrolled) {
-        navbar.style.backdropFilter = 'blur(10px)';
-        scrolled = true;
-      } else if (window.scrollY === 0 && scrolled) {
-        navbar.style.backdropFilter = 'blur(0)';
-        scrolled = false;
-      }
-    });
-    emailSignupButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('🎉 You\'re on the list! We\'ll be in touch soon.');
-    });
-    featureCards.forEach((card) => {
-      card.addEventListener('mouseover', () => {
-        card.style.transform = 'translateY(-8px)';
-        card.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.2)';
-      });
-      card.addEventListener('mouseout', () => {
-        card.style.transform = 'translateY(0)';
-        card.style.boxShadow = 'none';
-      });
-    });
-    pricingCards.forEach((card) => {
-      card.addEventListener('mouseover', () => {
-        card.style.transform = 'translateY(-8px)';
-        card.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.2)';
-      });
-      card.addEventListener('mouseout', () => {
-        card.style.transform = 'translateY(0)';
-        card.style.boxShadow = 'none';
-      });
-    });
-    testimonials.forEach((testimonial) => {
-      testimonial.addEventListener('mouseover', () => {
-        testimonial.style.transform = 'translateY(-8px)';
-        testimonial.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.2)';
-      });
-      testimonial.addEventListener('mouseout', () => {
-        testimonial.style.transform = 'translateY(0)';
-        testimonial.style.boxShadow = 'none';
-      });
-    });
-  </script>
 </body>
 </html>
